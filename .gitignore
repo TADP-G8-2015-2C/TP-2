@@ -1,5 +1,8 @@
 *.class
 *.log
+.cache-tests
+.classpath
+.project
 
 # sbt specific
 .cache
