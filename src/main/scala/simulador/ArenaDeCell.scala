@@ -9,19 +9,17 @@ object ArenaDeCell {
   case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado) {
 
     def aumentarKi(cuanto: Int) = {
-      if(cuanto + ki > kiMax){
+      if (cuanto + ki > kiMax) {
         copy(ki = kiMax)
-        }
-      else{
+      } else {
         copy(ki = ki + cuanto)
       }
     }
-    
+
     def disminuirKi(cuanto: Int) = {
-      if(ki - cuanto < 0){
+      if (ki - cuanto < 0) {
         copy(ki = 0)
-        }
-      else{
+      } else {
         copy(ki = ki - cuanto)
       }
     }
@@ -32,29 +30,36 @@ object ArenaDeCell {
 
     def recuperarMaxPotencial() = copy(ki = kiMax)
 
-    def esbueno() = List(Saiyajin(_,_,_),Namekusein(),Humano()).contains(this.raza)//Ez game
-    
+    def esbueno() = List(Saiyajin(_, _, _), Namekusein(), Humano()).contains(this.raza) //Ez game
+
     def disminuirMunicion(cant: Int) = {
-       removerItem(Fuego(cant))
-       .agregarItem(Fuego(cant - 1))
-    }
-
-    def fusionateCon (compañero:Guerrero) = {
-      copy(raza= Fusionado(this), ki = ki +compañero.ki, kiMax = kiMax+ compañero.kiMax, movimientos = movimientos ++ compañero.movimientos)
-      
+      removerItem(Fuego(cant))
+        .agregarItem(Fuego(cant - 1))
     }
     
+    def dejarDeSerSS() = {
+      (raza) match {
+        case(Saiyajin(cola, nivel, false)) => copy(raza = Saiyajin(cola, 0, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
+        case(_) => this
+      }
+    }
+
+    def fusionateCon(compañero: Guerrero) = {
+      copy(raza = Fusionado(this), ki = ki + compañero.ki, kiMax = kiMax + compañero.kiMax, movimientos = movimientos ++ compañero.movimientos)
+
+    }
+
     def morite() = copy(estado = Muerto)
-    
-    def quedateInconsciente() = copy(estado = Inconsciente)
 
-    def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
-    
-    def transformateEnMono = copy (kiMax = raza.aumentarKiMax(this), ki = kiMax)
+    def quedateInconsciente() = raza.meQuedeInconsciente(this).copy(estado = Inconsciente)
+
+    def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
+
+    def transformateEnMono = copy(kiMax = raza.aumentarKiMax(this), ki = kiMax)
   }
 
   trait Estado {}
-//Object class no serían??
+  //Object class no serían??
   case object Inconsciente extends Estado
   case object Muerto extends Estado
   case object Normal extends Estado
@@ -67,16 +72,16 @@ object ArenaDeCell {
         luchadores
       } else {
         (item, luchadores._1.raza, luchadores._2.get.raza) match {
-          case (Roma(), _, Androide(_)) => luchadores
+          case (Roma(), _, Androide(_))                     => luchadores
           case (Roma(), _, _) if luchadores._2.get.ki < 300 => (luchadores._1, luchadores._2.map(defe => defe quedateInconsciente))
-          case (Filosa(), _, Saiyajin(true, _, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
-          case (Filosa(), _, _) => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
-          case (Fuego(cant), _, _) if cant <= 0 => luchadores
-          case (Fuego(cant), _, Humano()) => (luchadores._1.disminuirMunicion(cant), 
-              luchadores._2.map(defe => defe disminuirKi (20)))
-          case (Fuego(cant), _, Namekusein()) if luchadores._2.get.estado == Inconsciente => 
+          case (Filosa(), _, Saiyajin(true, _, _))          => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
+          case (Filosa(), _, _)                             => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
+          case (Fuego(cant), _, _) if cant <= 0             => luchadores
+          case (Fuego(cant), _, Humano()) => (luchadores._1.disminuirMunicion(cant),
+            luchadores._2.map(defe => defe disminuirKi (20)))
+          case (Fuego(cant), _, Namekusein()) if luchadores._2.get.estado == Inconsciente =>
             (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (10)))
-          case (Fuego(cant), _, _) => (luchadores._1.disminuirMunicion(cant), luchadores._2)
+          case (Fuego(cant), _, _)          => (luchadores._1.disminuirMunicion(cant), luchadores._2)
           case (SemillaDelErmitaño(), _, _) => (luchadores._1.recuperarMaxPotencial(), luchadores._2)
         }
       }
@@ -94,39 +99,39 @@ object ArenaDeCell {
     def apply(luchadores: Luchadores) = {
       (luchadores._1, luchadores._1.raza) match {
         case (_, Namekusein()) => criterio(luchadores)
-        case (_, Monstruo()) => criterio(luchadores)
-        case (guerrero, _) if guerrero.poseeItem(SieteEsferasDelDragon()) => 
+        case (_, Monstruo())   => criterio(luchadores)
+        case (guerrero, _) if guerrero.poseeItem(SieteEsferasDelDragon()) =>
           criterio(guerrero.removerItem(SieteEsferasDelDragon()), luchadores._2)
-        case(_, _) => luchadores
+        case (_, _) => luchadores
       }
     }
   }
-  
 
   case class Fusion(Compañero: Guerrero) extends Movimiento {
     def apply(luchadores: Luchadores) = {
-      (luchadores._1,luchadores._2.get) match {
-        case (luchador,compañero) if luchador.esbueno() && compañero.esbueno()=> (luchador.fusionateCon(compañero),luchadores._2)
+      (luchadores._1, luchadores._2.get) match {
+        case (luchador, compañero) if luchador.esbueno() && compañero.esbueno() => (luchador.fusionateCon(compañero), luchadores._2)
         case _ => luchadores
       }
     }
   }
-  
+
   case class ComerseAOtro(criterio: Luchadores => Set[Movimiento]) extends Movimiento {
     def apply(luchadores: Luchadores) = {
-      (luchadores._1.raza,luchadores._2.get.ki) match{
-        case(Monstruo(),kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = criterio(luchadores) ),luchadores._2.map(l2 => l2 morite))
+      (luchadores._1.raza, luchadores._2.get.ki) match {
+        case (Monstruo(), kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = criterio(luchadores)), luchadores._2.map(l2 => l2 morite))
+        case (_, _) => luchadores
       }
     }
   }
-  
 
-
-  abstract class Raza{
+  abstract class Raza {
     def cortarCola = this
-    def kiLuegoDeCortarCola(unGuerrero: Guerrero) = unGuerrero.ki 
+    def kiLuegoDeCortarCola(unGuerrero: Guerrero) = unGuerrero.ki
     def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
     def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
+    def subirDeNivel(unGuerrero: Guerrero) = this
+    def meQuedeInconsciente(unGuerrero: Guerrero) = unGuerrero
   }
 
   case class Monstruo() extends Raza {}
@@ -135,19 +140,24 @@ object ArenaDeCell {
   case class Namekusein() extends Raza {}
   case class Fusionado(guerreroOriginal: Guerrero) extends Raza {}
   case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean = false) extends Raza {
-    
-    /*
-     *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
-     *  (eso quiere decir que cuando un SS se vuelve muy fuerte se puede convertir en SS nivel 2, luego en SS nivel 3 y así...). 
-     *  Para poder convertirse en SS o pasar al siguiente nivel, el ki del Saiyajin debe estar, por lo menos, por la mitad de su máximo actual. 
-     *  Al transformarse, el máximo ki del guerrero se multiplica por 5 por cada nivel de Super Saiyajin, pero su ki no aumenta. 
-     *  Si el guerrero queda inconsciente o se transforma en mono el estado de SS se pierde.
-     */
-    
+
+    override def subirDeNivel(guerrero: Guerrero) = {
+      if (guerrero.ki >= guerrero.kiMax) {
+        copy(nivel = nivel + 1)
+      } else {
+        this
+      }
+    }
+
     override def cortarCola = copy(cola = false, monoGigante = false)
-    override def kiLuegoDeCortarCola(unGuerrero: Guerrero) = 1  //TODO lo del MonoGigante como tratarlo
+    override def kiLuegoDeCortarCola(unGuerrero: Guerrero) = 1 //TODO lo del MonoGigante como tratarlo
     override def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax * 3
     override def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax / 3
+
+    override def meQuedeInconsciente(unGuerrero: Guerrero) = {
+        unGuerrero.dejarDeSerSS()
+      
+    }
   }
 
   type Movimiento = Luchadores => Luchadores
@@ -158,18 +168,31 @@ object ArenaDeCell {
 
   val cargarKi = (luchadores: Luchadores) => {
     luchadores._1.raza match {
-      case Androide(_)                     => luchadores
+      case Androide(_)                        => luchadores
       case Saiyajin(_, nivel, _) if nivel > 0 => (luchadores._1.aumentarKi(150 * nivel), luchadores._2) //corregir y hacer que matchee con ss
-      case _                               => (luchadores._1.aumentarKi(100), luchadores._2)
+      case _                                  => (luchadores._1.aumentarKi(100), luchadores._2)
     }
   }
 
   val convertirseEnMonoGigante = (luchadores: Luchadores) => {
     (luchadores._1, luchadores._1.raza) match {
-      case (guerrero, Saiyajin(true, _, false)) if guerrero.poseeItem(FotoDeLaLuna()) => 
-        (guerrero.transformateEnMono, luchadores._2)
-      case (_,_) => luchadores
+      case (guerrero, Saiyajin(true, nivel, false)) if guerrero.poseeItem(FotoDeLaLuna()) => (guerrero.dejarDeSerSS.transformateEnMono, luchadores._2)
+      case (_, _) => luchadores
     }
   }
-  
+  val ConvertirseEnSS = (luchadores: Luchadores) => {
+    (luchadores._1.raza) match {
+      case (Saiyajin(_, nivel, false)) => (luchadores._1.copy(raza = luchadores._1.raza.subirDeNivel(luchadores._1), kiMax = (nivel + 1) * 5 * luchadores._1.kiMax), luchadores._2)
+      case (_)                         => luchadores
+    }
+
+  }
+
+  /*
+     *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
+     *  (eso quiere decir que cuando un SS se vuelve muy fuerte se puede convertir en SS nivel 2, luego en SS nivel 3 y así...). 
+     *  Para poder convertirse en SS o pasar al siguiente nivel, el ki del Saiyajin debe estar, por lo menos, por la mitad de su máximo actual. 
+     *  Al transformarse, el máximo ki del guerrero se multiplica por 5 por cada nivel de Super Saiyajin, pero su ki no aumenta. 
+     *  Si el guerrero queda inconsciente o se transforma en mono el estado de SS se pierde.
+     */
 }
