@@ -1,3 +1,4 @@
+package simuladorTest
 
 import simulador.ArenaDeCell._
 import org.scalatest._
