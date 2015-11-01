@@ -43,6 +43,7 @@ object ArenaDeCell {
         luchadores
       } else {
         (item, luchadores._1.raza, luchadores._2.get.raza) match {
+          case (Roma(), _, Androide(_)) => luchadores
           case (Roma(), _, _) if luchadores._2.get.ki < 300 => (luchadores._1, luchadores._2.map(defe => defe quedateInconsciente))
           case (Filosa(), _, Saiyajin(true, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
           case (Filosa(), _, _) => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
@@ -77,9 +78,7 @@ object ArenaDeCell {
 
   case class Monstruo() extends Raza {}
   case class Humano() extends Raza {}
-  case class Androide(bateria: Int = 0) extends Raza {
-    def quedateInconsciente() = this
-  }
+  case class Androide(bateria: Int = 0) extends Raza {}
   case class Namekusein() extends Raza {}
   case class Saiyajin(cola: Boolean, nivel: Int = 0) extends Raza {
     def cortarCola() = this //Va a ser implementado mas adelante
