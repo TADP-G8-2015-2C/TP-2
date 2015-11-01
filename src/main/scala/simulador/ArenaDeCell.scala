@@ -29,33 +29,33 @@ object ArenaDeCell {
   case object Normal extends Estado
   
   abstract class Item {
-    def aplicateSobre(luchadores: Luchadores)
+    def aplicateSobre(luchadores: Luchadores): Luchadores
   }
-  /*
+  
   case class Roma() extends Item{
-    def aplicateSobre(luchadores: Luchadores) = {
+    def aplicateSobre(luchadores: Luchadores): Luchadores = {
       val defensor = luchadores._2
       val atacante = luchadores._1
       
-      if(defensor.get.ki < 300 && defensor.get.raza != Androide()){
-          (atacante, defensor.get.quedateInconsciente())
+      if(defensor.get.ki < 300 || defensor.get.raza != Androide()){
+          (atacante, Option(defensor.get.quedateInconsciente()))
       }
       else {
-        luchadores
+        (atacante, defensor)
       }
       
     }
   }
   
-  
+  /*
   case class Filosa() extends Item{
     def aplicateSobre(luchadores: Luchadores) = {luchadores}
   }
   case class Fuego() extends Item{
     def aplicateSobre(luchadores: Luchadores) = {luchadores}
-  }
+  }*/
   
-  */
+  
   abstract class Raza
   
   case class Monstruo() extends Raza {}
@@ -78,11 +78,11 @@ object ArenaDeCell {
       case _ => (luchadores._1.aumentarKi(100), luchadores._2)
     }
   }
-  /*
+  
   case class usarItem(itemAUsar: Item) extends Movimiento {
     def apply(luchadores: Luchadores) = {
       val usador = luchadores._1
-      val atacante = luchadores._2
+      val defendor = luchadores._2
       
       if(!usador.poseeItem(itemAUsar)){
         luchadores
@@ -92,6 +92,6 @@ object ArenaDeCell {
       }
     }
     
-  }*/
+  }
   
 }
