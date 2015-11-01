@@ -1,5 +1,5 @@
 package warrior
 
-class Saiyajin extends Warrior {
+case class Saiyajin() extends Race {
   
 }

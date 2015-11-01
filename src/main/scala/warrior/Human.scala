@@ -1,5 +1,5 @@
 package warrior
 
-class Human extends Warrior {
+case class Human() extends Race {
   
 }

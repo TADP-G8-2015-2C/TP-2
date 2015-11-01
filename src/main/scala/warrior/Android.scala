@@ -1,5 +1,5 @@
 package warrior
 
-class Android extends Warrior {
+case class Android() extends Race {
   
 }
