@@ -1,0 +1,5 @@
+package warrior
+
+trait Race {
+  
+}
