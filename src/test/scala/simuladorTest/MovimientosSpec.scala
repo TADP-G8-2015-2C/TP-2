@@ -18,6 +18,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val yajirobe = Guerrero(Humano(), 1000, 5000, List(Filosa()), Set(), Normal)
   val ramboConMunicion = Guerrero(Humano(), 2000, 3000, List(Fuego(100)), Set(), Normal)
   val dende = Guerrero(Namekusein(), 100, 200, List(), Set(), Normal)
+  val karin = Guerrero(Humano(), 10, 100, List(SemillaDelErmitaño()), Set(), Normal)
   
   //Test cargarKi
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
@@ -121,5 +122,13 @@ class MovimientosSpec extends FlatSpec with Matchers {
     val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
     
     assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 100 && armaFuegoDisminuyoMunicion.isEmpty === false)
+  }
+  
+  //Test semilla de ermitaño
+  "karin" should "recuperarse al máximo el ki  por tener semillas del Ermitanio" in {
+    
+    val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño())((karin, Option(goku)))
+    
+    assert(luchadoresLuegoDeUsarItemSemilla._1.ki === luchadoresLuegoDeUsarItemSemilla._1.kiMax)
   }
 }
