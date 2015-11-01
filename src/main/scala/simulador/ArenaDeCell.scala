@@ -133,7 +133,7 @@ object ArenaDeCell {
   case class Androide(bateria: Int = 0) extends Raza {}
   case class Namekusein() extends Raza {}
   case class Fusionado(guerreroOriginal: Guerrero) extends Raza {}
-  case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean) extends Raza {
+  case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean = false) extends Raza {
     
     /*
      *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
