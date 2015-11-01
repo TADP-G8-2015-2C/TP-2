@@ -70,12 +70,12 @@ object ArenaDeCell {
   type Luchadores = (Guerrero, Option[Guerrero])
   
   
-  val dejarseFajar = (luchadores: Luchadores) => luchadores
+  val dejarseFajar = (luchadores: Luchadores) => luchadores//TODO posiblemente cambie cuando quiera saber los turnos
   
   val cargarKi = (luchadores: Luchadores) => {
     luchadores._1.raza match {
       case Androide(_) => luchadores
-      case Saiyajin(cola, nivel) => (luchadores._1.aumentarKi(150 * nivel), luchadores._2)
+      case Saiyajin(_, nivel) => (luchadores._1.aumentarKi(150 * nivel), luchadores._2)//corregir y hacer que matchee con ss
       case _ => (luchadores._1.aumentarKi(100), luchadores._2)
     }
   }
