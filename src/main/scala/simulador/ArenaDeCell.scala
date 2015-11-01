@@ -48,7 +48,7 @@ object ArenaDeCell {
     
     def quedateInconsciente() = copy(estado = Inconsciente)
 
-    def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this))
+    def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
     
     def transformateEnMono = copy (kiMax = raza.aumentarKiMax(this), ki = kiMax)
   }
@@ -125,7 +125,8 @@ object ArenaDeCell {
   abstract class Raza{
     def cortarCola = this
     def kiLuegoDeCortarCola(unGuerrero: Guerrero) = unGuerrero.ki 
-    def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax * 3
+    def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
+    def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
   }
 
   case class Monstruo() extends Raza {}
@@ -143,8 +144,10 @@ object ArenaDeCell {
      *  Si el guerrero queda inconsciente o se transforma en mono el estado de SS se pierde.
      */
     
-    override def cortarCola = copy(cola = false)
+    override def cortarCola = copy(cola = false, monoGigante = false)
     override def kiLuegoDeCortarCola(unGuerrero: Guerrero) = 1  //TODO lo del MonoGigante como tratarlo
+    override def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax * 3
+    override def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax / 3
   }
 
   type Movimiento = Luchadores => Luchadores
