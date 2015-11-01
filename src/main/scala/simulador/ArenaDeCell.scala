@@ -44,13 +44,15 @@ object ArenaDeCell {
       
     }
     
+    def morite() = copy(estado = Muerto)
+    
     def quedateInconsciente() = copy(estado = Inconsciente)
 
     def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this))
   }
 
   trait Estado {}
-
+//Object class no serían??
   case object Inconsciente extends Estado
   case object Muerto extends Estado
   case object Normal extends Estado
@@ -106,6 +108,16 @@ object ArenaDeCell {
       }
     }
   }
+  
+  case class ComerseAOtro(criterio: Luchadores => Set[Movimiento]) extends Movimiento {
+    def apply(luchadores: Luchadores) = {
+      (luchadores._1.raza,luchadores._2.get.ki) match{
+        case(Monstruo(),kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = criterio(luchadores) ),luchadores._2.map(l2 => l2 morite))
+      }
+    }
+  }
+  
+
 
   abstract class Raza{
     def cortarCola = this
