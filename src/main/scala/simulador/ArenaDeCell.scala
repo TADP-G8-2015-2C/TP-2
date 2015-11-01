@@ -8,8 +8,23 @@ object ArenaDeCell {
 
   case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado) {
 
-    def aumentarKi(cuanto: Int) = copy(ki = ki + cuanto)
-    def disminuirKi(cuanto: Int) = copy(ki = ki - cuanto)
+    def aumentarKi(cuanto: Int) = {
+      if(cuanto + ki > kiMax){
+        copy(ki = kiMax)
+        }
+      else{
+        copy(ki = ki + cuanto)
+      }
+    }
+    
+    def disminuirKi(cuanto: Int) = {
+      if(ki - cuanto < 0){
+        copy(ki = 0)
+        }
+      else{
+        copy(ki = ki - cuanto)
+      }
+    }
     def aprenderMovimiento(unMovimiento: Movimiento) = copy(movimientos = movimientos + (unMovimiento))
     def agregarItem(unItem: Item) = copy(items = items.+:(unItem))
     def poseeItem(unItem: Item) = items.contains(unItem)
@@ -68,10 +83,20 @@ object ArenaDeCell {
   case class Filosa() extends Item {}
   case class Fuego(cant: Int = 0) extends Item {}
   case class SemillaDelErmitaño() extends Item {}
+  case class SieteEsferasDelDragon() extends Item {}
 
   case class Magia(criterio: Luchadores => Luchadores) extends Movimiento {
-    def apply(luchadores: Luchadores) = criterio(luchadores)
+    def apply(luchadores: Luchadores) = {
+      (luchadores._1, luchadores._1.raza) match {
+        case (_, Namekusein()) => criterio(luchadores)
+        case (_, Monstruo()) => criterio(luchadores)
+        case (guerrero, _) if guerrero.poseeItem(SieteEsferasDelDragon()) => 
+          criterio(guerrero.removerItem(SieteEsferasDelDragon()), luchadores._2)
+        case(_, _) => luchadores
+      }
+    }
   }
+  
 
   case class Fusion(Compañero: Guerrero) extends Movimiento {
     def apply(luchadores: Luchadores) = {

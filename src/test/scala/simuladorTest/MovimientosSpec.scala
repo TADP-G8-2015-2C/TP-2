@@ -19,6 +19,20 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val ramboConMunicion = Guerrero(Humano(), 2000, 3000, List(Fuego(100)), Set(), Normal)
   val dende = Guerrero(Namekusein(), 100, 200, List(), Set(), Normal)
   val karin = Guerrero(Humano(), 10, 100, List(SemillaDelErmitaño()), Set(), Normal)
+  val monstruoFeo = Guerrero(Monstruo(), 1000, 10000, List(), Set(), Normal)
+  val krilin = Guerrero(Humano(), 5000, 10000, List(SieteEsferasDelDragon()), Set(), Normal)
+  
+  val magiaDende = (luchadores: Luchadores) => {
+    (luchadores._1.aumentarKi(500), Option(luchadores._2.get.disminuirKi(200)))
+  }
+  
+  val magiaLoca = (luchadores: Luchadores) => {
+    (luchadores._1.quedateInconsciente(), Option(luchadores._2.get.removerItem(SemillaDelErmitaño())))
+  }
+  
+  val superMagia = (luchadores: Luchadores) => {
+    (luchadores._1.recuperarMaxPotencial(), Option(luchadores._2.get.disminuirKi(100000)))
+  }
   
   //Test cargarKi
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
@@ -131,4 +145,37 @@ class MovimientosSpec extends FlatSpec with Matchers {
     
     assert(luchadoresLuegoDeUsarItemSemilla._1.ki === luchadoresLuegoDeUsarItemSemilla._1.kiMax)
   }
+  
+  //Test Magia
+  "dende" should "aplicar una magia dada, ya que es Namekusein" in {
+    
+    val luchadoresLuegoDeMagia = Magia(magiaDende)(dende, Option(mrSatan))
+    
+    assert(luchadoresLuegoDeMagia._1.ki === 200 && luchadoresLuegoDeMagia._2.get.ki === 800)
+    
+  }
+  
+  "mostruoFeo" should "aplicar una magia dada, ya que es Monstruo" in {
+     
+    val luchadoresLuegoDeMagia = Magia(magiaLoca)(monstruoFeo, Option(karin))
+    
+    val tieneItemSemillaDelErmitaño = luchadoresLuegoDeMagia._2.get.items.find { item => item === SemillaDelErmitaño() }
+    
+    assert(luchadoresLuegoDeMagia._1.estado === Inconsciente && tieneItemSemillaDelErmitaño.isEmpty === true)
+  }
+  
+  "krilin" should "aplicar magia dado que tiene las 7 esferas!" in {
+    
+    val luchadoresLuegoDeMagia = Magia(superMagia)(krilin, Option(goku))
+    
+    assert(luchadoresLuegoDeMagia._1.ki === 10000 && luchadoresLuegoDeMagia._2.get.ki === 0)
+  }
+  
+  "mrSatan" should "no hacer magia, ya que es un simple humano sin esferas en su haber" in {
+    
+    val luchadoresLuegoDeMagia = Magia(superMagia)(mrSatan, Option(goku))
+    
+    assert(luchadoresLuegoDeMagia._1.ki === 1000 && luchadoresLuegoDeMagia._2.get.ki === 20000)
+  }
+  
 }
