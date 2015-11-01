@@ -5,9 +5,9 @@ import org.scalatest.Matchers
 
 class TestMovimientos extends FlatSpec with Matchers {
   
-  val mrSatan = Guerrero(Humano(), 1000, List(), List())
-  val goku = Guerrero(Saiyajin(true, 3), 20000, List(), List())
-  val androide18 = Guerrero(Androide(1000), 0, List(), List())
+  val mrSatan = Guerrero(Humano(), 1000, List(), List(), Normal)
+  val goku = Guerrero(Saiyajin(true, 3), 20000, List(), List(), Normal)
+  val androide18 = Guerrero(Androide(1000), 0, List(), List(), Normal)
   
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
 
