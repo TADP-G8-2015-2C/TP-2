@@ -32,7 +32,7 @@ object ArenaDeCell {
 
     def recuperarMaxPotencial() = copy(ki = kiMax)
 
-    def esbueno() = List(Saiyajin(_,_),Namekusein(),Humano()).contains(this.raza)//Ez game
+    def esbueno() = List(Saiyajin(_,_,_),Namekusein(),Humano()).contains(this.raza)//Ez game
     
     def disminuirMunicion(cant: Int) = {
        removerItem(Fuego(cant))
@@ -49,6 +49,8 @@ object ArenaDeCell {
     def quedateInconsciente() = copy(estado = Inconsciente)
 
     def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this))
+    
+    def transformateEnMono = copy (kiMax = raza.aumentarKiMax(this), ki = kiMax)
   }
 
   trait Estado {}
@@ -67,7 +69,7 @@ object ArenaDeCell {
         (item, luchadores._1.raza, luchadores._2.get.raza) match {
           case (Roma(), _, Androide(_)) => luchadores
           case (Roma(), _, _) if luchadores._2.get.ki < 300 => (luchadores._1, luchadores._2.map(defe => defe quedateInconsciente))
-          case (Filosa(), _, Saiyajin(true, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
+          case (Filosa(), _, Saiyajin(true, _, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
           case (Filosa(), _, _) => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
           case (Fuego(cant), _, _) if cant <= 0 => luchadores
           case (Fuego(cant), _, Humano()) => (luchadores._1.disminuirMunicion(cant), 
@@ -86,6 +88,7 @@ object ArenaDeCell {
   case class Fuego(cant: Int = 0) extends Item {}
   case class SemillaDelErmitaño() extends Item {}
   case class SieteEsferasDelDragon() extends Item {}
+  case class FotoDeLaLuna() extends Item {}
 
   case class Magia(criterio: Luchadores => Luchadores) extends Movimiento {
     def apply(luchadores: Luchadores) = {
@@ -122,6 +125,7 @@ object ArenaDeCell {
   abstract class Raza{
     def cortarCola = this
     def kiLuegoDeCortarCola(unGuerrero: Guerrero) = unGuerrero.ki 
+    def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax * 3
   }
 
   case class Monstruo() extends Raza {}
@@ -129,7 +133,7 @@ object ArenaDeCell {
   case class Androide(bateria: Int = 0) extends Raza {}
   case class Namekusein() extends Raza {}
   case class Fusionado(guerreroOriginal: Guerrero) extends Raza {}
-  case class Saiyajin(cola: Boolean, nivel: Int = 0) extends Raza {
+  case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean) extends Raza {
     
     /*
      *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
@@ -152,9 +156,17 @@ object ArenaDeCell {
   val cargarKi = (luchadores: Luchadores) => {
     luchadores._1.raza match {
       case Androide(_)                     => luchadores
-      case Saiyajin(_, nivel) if nivel > 0 => (luchadores._1.aumentarKi(150 * nivel), luchadores._2) //corregir y hacer que matchee con ss
+      case Saiyajin(_, nivel, _) if nivel > 0 => (luchadores._1.aumentarKi(150 * nivel), luchadores._2) //corregir y hacer que matchee con ss
       case _                               => (luchadores._1.aumentarKi(100), luchadores._2)
     }
   }
 
+  val convertirseEnMonoGigante = (luchadores: Luchadores) => {
+    (luchadores._1, luchadores._1.raza) match {
+      case (guerrero, Saiyajin(true, _, false)) if guerrero.poseeItem(FotoDeLaLuna()) => 
+        (guerrero.transformateEnMono, luchadores._2)
+      case (_,_) => luchadores
+    }
+  }
+  
 }
