@@ -47,8 +47,12 @@ object ArenaDeCell {
           case (Roma(), _, _) if luchadores._2.get.ki < 300 => (luchadores._1, luchadores._2.map(defe => defe quedateInconsciente))
           case (Filosa(), _, Saiyajin(true, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
           case (Filosa(), _, _) => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
-          case (Fuego(cant), _, Humano()) if cant > 0 => (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (20)))
-          case (Fuego(cant), _, Namekusein()) if cant > 0 && luchadores._2.get.estado == Inconsciente => (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (10)))
+          case (Fuego(cant), _, Humano()) if cant > 0 => (luchadores._1.disminuirMunicion(cant), 
+              luchadores._2.map(defe => defe disminuirKi (20)))
+          case (Fuego(cant), _, Namekusein()) if cant > 0 && luchadores._2.get.estado == Inconsciente => 
+            (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (10)))
+          case (Fuego(cant), _, _) if cant < 0 => luchadores
+          case (Fuego(cant), _, _) => (luchadores._1.disminuirMunicion(cant), luchadores._2)
           case (SemillaDelErmitaño(), _, _) => (luchadores._1.recuperarMaxPotencial(), luchadores._2)
         }
       }
@@ -57,7 +61,7 @@ object ArenaDeCell {
 
   case class Roma() extends Item {}
   case class Filosa() extends Item {}
-  case class Fuego(cant: Int) extends Item {}
+  case class Fuego(cant: Int = 0) extends Item {}
   case class SemillaDelErmitaño() extends Item {}
 
   case class Magia(criterio: Luchadores => Luchadores) extends Movimiento {

@@ -16,6 +16,8 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val androide18 = Guerrero(Androide(1000), 0, 50000, List(), Set(), Normal)
   val humanoConItemRomo = Guerrero(Humano(), 1000, 50000, List(Roma()), Set(), Normal)
   val yajirobe = Guerrero(Humano(), 1000, 5000, List(Filosa()), Set(), Normal)
+  val ramboConMunicion = Guerrero(Humano(), 2000, 3000, List(Fuego(100)), Set(), Normal)
+  val dende = Guerrero(Namekusein(), 100, 200, List(), Set(), Normal)
   
   //Test cargarKi
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
@@ -70,16 +72,54 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //Test usarItem Filoso
   "yajirobe" should "disminuir en 10 (1000/100) el ki de mrSatan al atacarlo con arma filosa" in {
     
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Filosa())((yajirobe, Option(mrSatan)))
+    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, Option(mrSatan)))
     
-    assert(luchadoresLuegoDeUsarItemRoma._2.get.ki === 990)
+    assert(luchadoresLuegoDeUsarItemFiloso._2.get.ki === 990)
   }
   
-  //todo falta ver lo del mono gigante.
+  //TODO falta ver lo del mono gigante.
   "yajirobe" should "cortar cola de goku y quedar en 1 de ki por ser este un saiyajin con cola y darle con arma filosa" in {
     
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Filosa())((yajirobe, Option(goku)))
+    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, Option(goku)))
     
-    assert(luchadoresLuegoDeUsarItemRoma._2.get.raza === Saiyajin(false,3) && luchadoresLuegoDeUsarItemRoma._2.get.ki === 1)
+    assert(luchadoresLuegoDeUsarItemFiloso._2.get.raza === Saiyajin(false,3) && luchadoresLuegoDeUsarItemFiloso._2.get.ki === 1)
+  }
+  
+  //Test usarItem Fuego
+  "rambo" should "no hacer nada a ninguna raza porque no tiene munición en su arma de fuego" in {
+  
+    val ramboSinBalas = Guerrero(Humano(), 2000, 3000, List(Fuego(0)), Set(), Normal)
+    
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(0))((ramboSinBalas, Option(humanoConItemRomo)))
+    
+    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 1000)
+  }
+  
+  "rambo" should "hacer 20 de danio raza Humana y disminuir en 1 su municion en el arma" in {
+  
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, Option(humanoConItemRomo)))
+    
+    val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
+    
+    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 980 && armaFuegoDisminuyoMunicion.isEmpty === false)
+  }
+  
+  "rambo" should "hacer 10 de danio raza Namekusein inconsciente y disminuir en 1 su municion en el arma" in {
+  
+    val dendeInconsciente = Guerrero(Namekusein(), 100, 200, List(), Set(), Inconsciente)
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, Option(dendeInconsciente)))
+    
+    val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
+    
+    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 90 && armaFuegoDisminuyoMunicion.isEmpty === false)
+  }
+  
+  "rambo" should "no hacer danio a Namekusein normal y disminuir en 1 su municion en el arma" in {
+  
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, Option(dende)))
+    
+    val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
+    
+    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 100 && armaFuegoDisminuyoMunicion.isEmpty === false)
   }
 }
