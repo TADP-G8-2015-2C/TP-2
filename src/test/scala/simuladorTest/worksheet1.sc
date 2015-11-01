@@ -7,4 +7,6 @@ object worksheet1 {
 	a + 4                                     //> res0: scala.collection.immutable.Set[Int] = Set(1, 3, 2, 4)
 	a+2                                       //> res1: scala.collection.immutable.Set[Int] = Set(1, 3, 2)
 //  a.+:(4)
+
+	a + 3                                     //> res2: scala.collection.immutable.Set[Int] = Set(1, 3, 2)
 }
