@@ -1,5 +1,0 @@
-package movement
-
-trait Movement {
-  
-}

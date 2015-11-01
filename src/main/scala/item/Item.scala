@@ -1,5 +1,0 @@
-package item
-
-trait Item {
-  
-}
