@@ -15,8 +15,9 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val goku = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
   val androide18 = Guerrero(Androide(1000), 0, 50000, List(), Set(), Normal)
   val humanoConItemRomo = Guerrero(Humano(), 1000, 50000, List(Roma()), Set(), Normal)
+  val yajirobe = Guerrero(Humano(), 1000, 5000, List(Filosa()), Set(), Normal)
   
-  
+  //Test cargarKi
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
 
     assertResult(1100) {
@@ -34,6 +35,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
     assert(cargarKi(androide18, None)._1.ki === 0)
   }
 
+  //Test usarItem Romo
   "mrSatan" should "no hacer nada  cuando useItem Romo ya que no lo tiene en su inventario" in {
 
     val humanito = Guerrero(Humano(), 1, 50000, List(), Set(), Normal)
@@ -63,5 +65,21 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
     assert(luchadoresLuegoDeUsarItemRoma._2.get.estado === Normal)
   }
-
+  
+  
+  //Test usarItem Filoso
+  "yajirobe" should "disminuir en 10 (1000/100) el ki de mrSatan al atacarlo con arma filosa" in {
+    
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Filosa())((yajirobe, Option(mrSatan)))
+    
+    assert(luchadoresLuegoDeUsarItemRoma._2.get.ki === 990)
+  }
+  
+  //todo falta ver lo del mono gigante.
+  "yajirobe" should "cortar cola de goku y quedar en 1 de ki por ser este un saiyajin con cola y darle con arma filosa" in {
+    
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Filosa())((yajirobe, Option(goku)))
+    
+    assert(luchadoresLuegoDeUsarItemRoma._2.get.raza === Saiyajin(false,3) && luchadoresLuegoDeUsarItemRoma._2.get.ki === 1)
+  }
 }

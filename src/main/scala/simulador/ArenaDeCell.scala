@@ -26,7 +26,7 @@ object ArenaDeCell {
 
     def quedateInconsciente() = copy(estado = Inconsciente)
 
-    def cortarCola() = this //para que tipe
+    def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this))
   }
 
   trait Estado {}
@@ -49,7 +49,6 @@ object ArenaDeCell {
           case (Filosa(), _, _) => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
           case (Fuego(cant), _, Humano()) if cant > 0 => (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (20)))
           case (Fuego(cant), _, Namekusein()) if cant > 0 && luchadores._2.get.estado == Inconsciente => (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (10)))
-          case (Filosa(), _, Saiyajin(true, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
           case (SemillaDelErmitaño(), _, _) => (luchadores._1.recuperarMaxPotencial(), luchadores._2)
         }
       }
@@ -74,14 +73,19 @@ object ArenaDeCell {
     }
   }
 
-  abstract class Raza
+  abstract class Raza{
+    def cortarCola = this
+    def kiLuegoDeCortarCola(unGuerrero: Guerrero) = unGuerrero.ki 
+  }
 
   case class Monstruo() extends Raza {}
   case class Humano() extends Raza {}
   case class Androide(bateria: Int = 0) extends Raza {}
   case class Namekusein() extends Raza {}
   case class Saiyajin(cola: Boolean, nivel: Int = 0) extends Raza {
-    def cortarCola() = this //Va a ser implementado mas adelante
+    
+    override def cortarCola = copy(cola = false)
+    override def kiLuegoDeCortarCola(unGuerrero: Guerrero) = 1  //TODO lo del MonoGigante como tratarlo
   }
 
   type Movimiento = Luchadores => Luchadores
