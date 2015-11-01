@@ -9,4 +9,5 @@ object worksheet1 {
 //  a.+:(4)
 
 	a + 3                                     //> res2: scala.collection.immutable.Set[Int] = Set(1, 3, 2)
+	a ++ Set(1,99)                            //> res3: scala.collection.immutable.Set[Int] = Set(1, 3, 2, 99)
 }

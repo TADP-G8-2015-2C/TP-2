@@ -20,10 +20,15 @@ object ArenaDeCell {
     def esbueno() = List(Saiyajin(_,_),Namekusein(),Humano()).contains(this.raza)//Ez game
     
     def disminuirMunicion(cant: Int) = {
-      this removerItem (Fuego(cant))
-      this agregarItem (Fuego(cant - 1))
+       removerItem(Fuego(cant))
+       .agregarItem(Fuego(cant - 1))
     }
 
+    def fusionateCon (compañero:Guerrero) = {
+      copy(raza= Fusionado(this), ki = ki +compañero.ki, kiMax = kiMax+ compañero.kiMax, movimientos = movimientos ++ compañero.movimientos)
+      
+    }
+    
     def quedateInconsciente() = copy(estado = Inconsciente)
 
     def cortarCola() = copy (raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this))
@@ -47,11 +52,11 @@ object ArenaDeCell {
           case (Roma(), _, _) if luchadores._2.get.ki < 300 => (luchadores._1, luchadores._2.map(defe => defe quedateInconsciente))
           case (Filosa(), _, Saiyajin(true, _)) => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
           case (Filosa(), _, _) => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
-          case (Fuego(cant), _, Humano()) if cant > 0 => (luchadores._1.disminuirMunicion(cant), 
+          case (Fuego(cant), _, _) if cant <= 0 => luchadores
+          case (Fuego(cant), _, Humano()) => (luchadores._1.disminuirMunicion(cant), 
               luchadores._2.map(defe => defe disminuirKi (20)))
-          case (Fuego(cant), _, Namekusein()) if cant > 0 && luchadores._2.get.estado == Inconsciente => 
+          case (Fuego(cant), _, Namekusein()) if luchadores._2.get.estado == Inconsciente => 
             (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (10)))
-          case (Fuego(cant), _, _) if cant < 0 => luchadores
           case (Fuego(cant), _, _) => (luchadores._1.disminuirMunicion(cant), luchadores._2)
           case (SemillaDelErmitaño(), _, _) => (luchadores._1.recuperarMaxPotencial(), luchadores._2)
         }
@@ -70,8 +75,8 @@ object ArenaDeCell {
 
   case class Fusion(Compañero: Guerrero) extends Movimiento {
     def apply(luchadores: Luchadores) = {
-      (luchadores._1) match {
-        case (luchador) if luchador.esbueno()=> luchadores//TODO insertar fusion
+      (luchadores._1,luchadores._2.get) match {
+        case (luchador,compañero) if luchador.esbueno() && compañero.esbueno()=> (luchador.fusionateCon(compañero),luchadores._2)
         case _ => luchadores
       }
     }
@@ -86,7 +91,16 @@ object ArenaDeCell {
   case class Humano() extends Raza {}
   case class Androide(bateria: Int = 0) extends Raza {}
   case class Namekusein() extends Raza {}
+  case class Fusionado(guerreroOriginal: Guerrero) extends Raza {}
   case class Saiyajin(cola: Boolean, nivel: Int = 0) extends Raza {
+    
+    /*
+     *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
+     *  (eso quiere decir que cuando un SS se vuelve muy fuerte se puede convertir en SS nivel 2, luego en SS nivel 3 y así...). 
+     *  Para poder convertirse en SS o pasar al siguiente nivel, el ki del Saiyajin debe estar, por lo menos, por la mitad de su máximo actual. 
+     *  Al transformarse, el máximo ki del guerrero se multiplica por 5 por cada nivel de Super Saiyajin, pero su ki no aumenta. 
+     *  Si el guerrero queda inconsciente o se transforma en mono el estado de SS se pierde.
+     */
     
     override def cortarCola = copy(cola = false)
     override def kiLuegoDeCortarCola(unGuerrero: Guerrero) = 1  //TODO lo del MonoGigante como tratarlo
