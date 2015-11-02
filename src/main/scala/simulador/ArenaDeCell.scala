@@ -18,11 +18,20 @@ object ArenaDeCell {
 
     def disminuirKi(cuanto: Int) = {
       if (ki - cuanto < 0) {
-        copy(ki = 0)
+        copy(ki = 0, estado= Muerto)
       } else {
         copy(ki = ki - cuanto)
       }
     }
+    def disminuirKiNamekusein(cuanto: Int) = {
+      if(ki - cuanto < 1) {
+        disminuirKi(ki -1)
+      }
+      else {
+        disminuirKi(cuanto)
+      }
+    }
+    
     def aprenderMovimiento(unMovimiento: Movimiento) = copy(movimientos = movimientos + (unMovimiento))
     def agregarItem(unItem: Item) = copy(items = items.+:(unItem))
     def poseeItem(unItem: Item) = items.contains(unItem)
@@ -31,16 +40,17 @@ object ArenaDeCell {
     def recuperarMaxPotencial() = copy(ki = kiMax)
 
     def esbueno() = List(Saiyajin(_, _, _), Namekusein(), Humano()).contains(this.raza) //Ez game
+    def esMalo() = List(Androide(_),Monstruo()).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
 
     def disminuirMunicion(cant: Int) = {
       removerItem(Fuego(cant))
         .agregarItem(Fuego(cant - 1))
     }
-    
+
     def dejarDeSerSS() = {
       (raza) match {
-        case(Saiyajin(cola, nivel, false)) => copy(raza = Saiyajin(cola, 0, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
-        case(_) => this
+        case (Saiyajin(cola, nivel, false)) => copy(raza = Saiyajin(cola, 0, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
+        case (_)                            => this
       }
     }
 
@@ -155,8 +165,8 @@ object ArenaDeCell {
     override def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax / 3
 
     override def meQuedeInconsciente(unGuerrero: Guerrero) = {
-        unGuerrero.dejarDeSerSS()
-      
+      unGuerrero.dejarDeSerSS()
+
     }
   }
 
@@ -185,8 +195,41 @@ object ArenaDeCell {
       case (Saiyajin(_, nivel, false)) => (luchadores._1.copy(raza = luchadores._1.raza.subirDeNivel(luchadores._1), kiMax = (nivel + 1) * 5 * luchadores._1.kiMax), luchadores._2)
       case (_)                         => luchadores
     }
-
   }
+
+  trait Ataque {}
+  case class Energia(ataque: Movimiento) extends Ataque {}
+  case class Fisico(ataque: Movimiento) extends Ataque {}
+
+  val muchosGolpesNinja = (luchadores: Luchadores) => {
+    (luchadores._1.raza, luchadores._2.get.raza) match {
+      case (Humano(), Androide(_)) => (luchadores._1.disminuirKi(10), luchadores._2)
+      case (_, _) => if ((luchadores._1.ki > luchadores._2.get.ki)) {
+        (luchadores._1, luchadores._2.map(a => a.disminuirKi(20)))
+      } else {
+        (luchadores._1.disminuirKi(20), luchadores._2)
+      }
+    }
+  }
+  
+    val Explotar  = (luchadores: Luchadores) => {
+      (luchadores._1.raza, luchadores._2.get.raza) match {
+      case (Monstruo(),Namekusein()) => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKiNamekusein(luchadores._1.ki *2) )) 
+      case (Androide(bateria),Namekusein()) => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKi(bateria *3))) 
+      case (Monstruo(),_) => (luchadores._1.morite(), luchadores._2.map { l2 => l2 disminuirKi(luchadores._1.ki * 2)}) 
+      case (Androide(bateria),_) => (luchadores._1.morite(), luchadores._2.map(l2 =>l2 disminuirKi(bateria *3))) 
+      case(_,_) => luchadores
+        }  
+    }
+
+  /*   case class atacarCon(ataque: Ataque) extends Movimiento {
+      def apply(luchadores: Luchadores) = {
+        (ataque,luchadores._1,luchadores._2.get) match{
+          case (Energia)
+          
+        }
+      }
+    }*/
 
   /*
      *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
