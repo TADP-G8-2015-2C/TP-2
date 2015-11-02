@@ -18,20 +18,19 @@ object ArenaDeCell {
 
     def disminuirKi(cuanto: Int) = {
       if (ki - cuanto < 0) {
-        copy(ki = 0, estado= Muerto)
+        copy(ki = 0, estado = Muerto)
       } else {
         copy(ki = ki - cuanto)
       }
     }
     def disminuirKiNamekusein(cuanto: Int) = {
-      if(ki - cuanto < 1) {
-        disminuirKi(ki -1)
-      }
-      else {
+      if (ki - cuanto < 1) {
+        disminuirKi(ki - 1)
+      } else {
         disminuirKi(cuanto)
       }
     }
-    
+
     def aprenderMovimiento(unMovimiento: Movimiento) = copy(movimientos = movimientos + (unMovimiento))
     def agregarItem(unItem: Item) = copy(items = items.+:(unItem))
     def poseeItem(unItem: Item) = items.contains(unItem)
@@ -40,7 +39,7 @@ object ArenaDeCell {
     def recuperarMaxPotencial() = copy(ki = kiMax)
 
     def esbueno() = List(Saiyajin(_, _, _), Namekusein(), Humano()).contains(this.raza) //Ez game
-    def esMalo() = List(Androide(_),Monstruo()).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
+    def esMalo() = List(Androide(_), Monstruo()).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
 
     def disminuirMunicion(cant: Int) = {
       removerItem(Fuego(cant))
@@ -211,16 +210,27 @@ object ArenaDeCell {
       }
     }
   }
-  
-    val Explotar  = (luchadores: Luchadores) => {
-      (luchadores._1.raza, luchadores._2.get.raza) match {
-      case (Monstruo(),Namekusein()) => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKiNamekusein(luchadores._1.ki *2) )) 
-      case (Androide(bateria),Namekusein()) => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKi(bateria *3))) 
-      case (Monstruo(),_) => (luchadores._1.morite(), luchadores._2.map { l2 => l2 disminuirKi(luchadores._1.ki * 2)}) 
-      case (Androide(bateria),_) => (luchadores._1.morite(), luchadores._2.map(l2 =>l2 disminuirKi(bateria *3))) 
-      case(_,_) => luchadores
-        }  
+
+  val Explotar = (luchadores: Luchadores) => {
+    (luchadores._1.raza, luchadores._2.get.raza) match {
+      case (Monstruo(), Namekusein())        => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKiNamekusein (luchadores._1.ki * 2)))
+      case (Androide(bateria), Namekusein()) => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKi (bateria * 3)))
+      case (Monstruo(), _)                   => (luchadores._1.morite(), luchadores._2.map { l2 => l2 disminuirKi (luchadores._1.ki * 2) })
+      case (Androide(bateria), _)            => (luchadores._1.morite(), luchadores._2.map(l2 => l2 disminuirKi (bateria * 3)))
+      case (_, _)                            => luchadores
     }
+  }
+  case class onda(kiNecesario: Int) extends Movimiento {
+    def apply(luchadores: Luchadores) = {//quizas con un if y una abstraccion me podría asegurar de que siempre tenga energia necesaria
+      (luchadores._1.raza, luchadores._2.get.raza) match {
+        case (Androide(bateria), Monstruo()) if bateria >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.map(l2 => l2 disminuirKi (kiNecesario /2)))
+        case (Androide(bateria), _) if bateria >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.map(l2 => l2 disminuirKi (kiNecesario *2)))
+        case (_, Monstruo()) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.map(l2 => l2 disminuirKiNamekusein (kiNecesario / 2)))
+        case (_, _) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.map { l2 => l2 disminuirKi (kiNecesario *2) })
+        case (_, _) => luchadores
+      }
+    }//ES MUY FEO ESTO MUCHISIMA LOGICA REPETIDA MATAN CONEJITOS
+  }
 
   /*   case class atacarCon(ataque: Ataque) extends Movimiento {
       def apply(luchadores: Luchadores) = {
