@@ -24,80 +24,80 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val krilin = Guerrero(Humano(), 5000, 10000, List(SieteEsferasDelDragon()), Set(), Normal)
 
   val magiaDende = (luchadores: Luchadores) => {
-    (luchadores._1.aumentarKi(500), Option(luchadores._2.get.disminuirKi(200)))
+    (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
   }
 
   val magiaLoca = (luchadores: Luchadores) => {
-    (luchadores._1.quedateInconsciente(), Option(luchadores._2.get.removerItem(SemillaDelErmitaño())))
+    (luchadores._1.quedateInconsciente(), luchadores._2.removerItem(SemillaDelErmitaño()))
   }
 
   val superMagia = (luchadores: Luchadores) => {
-    (luchadores._1.recuperarMaxPotencial(), Option(luchadores._2.get.disminuirKi(100000)))
+    (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
 
   //Test cargarKi
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
 
     assertResult(1100) {
-      cargarKi(mrSatan, None)._1.ki
+      cargarKi(mrSatan, null)._1.ki
     }
   }
 
   "goku" should "cargarKi y subir ki en  150 * nivel de SS por ser Saiyajin" in {
 
-    assert(cargarKi(goku, None)._1.ki === 20450)
+    assert(cargarKi(goku, null)._1.ki === 20450)
   }
 
   "androide18" should "cargarKi y no subir nada (seguir en 0) por ser un Androide" in {
 
-    assert(cargarKi(androide18, None)._1.ki === 0)
+    assert(cargarKi(androide18, null)._1.ki === 0)
   }
 
   //Test usarItem Romo
   "mrSatan" should "no hacer nada  cuando useItem Romo ya que no lo tiene en su inventario" in {
 
     val humanito = Guerrero(Humano(), 1, 50000, List(), Set(), Normal)
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((mrSatan, Option(humanito)))
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((mrSatan, humanito))
 
-    assert(luchadoresLuegoDeUsarItemRoma._1 === mrSatan && luchadoresLuegoDeUsarItemRoma._2 === Option(humanito))
+    assert(luchadoresLuegoDeUsarItemRoma._1 === mrSatan && luchadoresLuegoDeUsarItemRoma._2 === humanito)
   }
 
   "androide18" should "queda igual porque los androides no se modifican al recibir ataque de item Romo" in {
 
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoConItemRomo, Option(androide18)))
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoConItemRomo, androide18))
 
-    assert(luchadoresLuegoDeUsarItemRoma._1 === humanoConItemRomo && luchadoresLuegoDeUsarItemRoma._2 === Option(androide18))
+    assert(luchadoresLuegoDeUsarItemRoma._1 === humanoConItemRomo && luchadoresLuegoDeUsarItemRoma._2 === androide18)
   }
 
   "bulma" should "quedar iconsciente al recibir ataque con item Romo y tener menos de 300 de ki" in {
 
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoConItemRomo, Option(bulma)))
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoConItemRomo, bulma))
 
-    assert(luchadoresLuegoDeUsarItemRoma._2.get.estado === Inconsciente)
+    assert(luchadoresLuegoDeUsarItemRoma._2.estado === Inconsciente)
   }
 
   "bulma" should "quedar nomal al recibir ataque con item Romo de alguien que no posee dicho item aunque tiene menos de 300 de ki" in {
 
     val humanoSinItemRomo = Guerrero(Humano(), 1000, 50000, List(), Set(), Normal)
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoSinItemRomo, Option(bulma)))
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoSinItemRomo,bulma))
 
-    assert(luchadoresLuegoDeUsarItemRoma._2.get.estado === Normal)
+    assert(luchadoresLuegoDeUsarItemRoma._2.estado === Normal)
   }
 
   //Test usarItem Filoso
   "yajirobe" should "disminuir en 10 (1000/100) el ki de mrSatan al atacarlo con arma filosa" in {
 
-    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, Option(mrSatan)))
+    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, mrSatan))
 
-    assert(luchadoresLuegoDeUsarItemFiloso._2.get.ki === 990)
+    assert(luchadoresLuegoDeUsarItemFiloso._2.ki === 990)
   }
 
   //TODO falta ver lo del mono gigante.
   "yajirobe" should "cortar cola de goku y quedar en 1 de ki por ser este un saiyajin con cola y darle con arma filosa" in {
 
-    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, Option(goku)))
+    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, goku))
 
-    assert(luchadoresLuegoDeUsarItemFiloso._2.get.raza === Saiyajin(false, 3) && luchadoresLuegoDeUsarItemFiloso._2.get.ki === 1)
+    assert(luchadoresLuegoDeUsarItemFiloso._2.raza === Saiyajin(false, 3) && luchadoresLuegoDeUsarItemFiloso._2.ki === 1)
   }
 
   //Test usarItem Fuego
@@ -105,43 +105,43 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
     val ramboSinBalas = Guerrero(Humano(), 2000, 3000, List(Fuego(0)), Set(), Normal)
 
-    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(0))((ramboSinBalas, Option(humanoConItemRomo)))
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(0))((ramboSinBalas, humanoConItemRomo))
 
-    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 1000)
+    assert(luchadoresLuegoDeUsarItemFuego._2.ki === 1000)
   }
 
   "rambo" should "hacer 20 de danio raza Humana y disminuir en 1 su municion en el arma" in {
 
-    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, Option(humanoConItemRomo)))
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, humanoConItemRomo))
 
     val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
 
-    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 980 && armaFuegoDisminuyoMunicion.isEmpty === false)
+    assert(luchadoresLuegoDeUsarItemFuego._2.ki === 980 && armaFuegoDisminuyoMunicion.isEmpty === false)
   }
 
   "rambo" should "hacer 10 de danio raza Namekusein inconsciente y disminuir en 1 su municion en el arma" in {
 
     val dendeInconsciente = Guerrero(Namekusein(), 100, 200, List(), Set(), Inconsciente)
-    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, Option(dendeInconsciente)))
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, dendeInconsciente))
 
     val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
 
-    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 90 && armaFuegoDisminuyoMunicion.isEmpty === false)
+    assert(luchadoresLuegoDeUsarItemFuego._2.ki === 90 && armaFuegoDisminuyoMunicion.isEmpty === false)
   }
 
   "rambo" should "no hacer danio a Namekusein normal y disminuir en 1 su municion en el arma" in {
 
-    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, Option(dende)))
+    val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, dende))
 
     val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
 
-    assert(luchadoresLuegoDeUsarItemFuego._2.get.ki === 100 && armaFuegoDisminuyoMunicion.isEmpty === false)
+    assert(luchadoresLuegoDeUsarItemFuego._2.ki === 100 && armaFuegoDisminuyoMunicion.isEmpty === false)
   }
 
   //Test semilla de ermitaño
   "karin" should "recuperarse al máximo el ki  por tener semillas del Ermitanio" in {
 
-    val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño())((karin, Option(goku)))
+    val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño())((karin, goku))
 
     assert(luchadoresLuegoDeUsarItemSemilla._1.ki === luchadoresLuegoDeUsarItemSemilla._1.kiMax)
   }
@@ -149,33 +149,33 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //Test Magia
   "dende" should "aplicar una magia dada, ya que es Namekusein" in {
 
-    val luchadoresLuegoDeMagia = Magia(magiaDende)(dende, Option(mrSatan))
+    val luchadoresLuegoDeMagia = Magia(magiaDende)(dende, mrSatan)
 
-    assert(luchadoresLuegoDeMagia._1.ki === 200 && luchadoresLuegoDeMagia._2.get.ki === 800)
+    assert(luchadoresLuegoDeMagia._1.ki === 200 && luchadoresLuegoDeMagia._2.ki === 800)
 
   }
 
   "mostruoFeo" should "aplicar una magia dada, ya que es Monstruo" in {
 
-    val luchadoresLuegoDeMagia = Magia(magiaLoca)(monstruoFeo, Option(karin))
+    val luchadoresLuegoDeMagia = Magia(magiaLoca)(monstruoFeo, karin)
 
-    val tieneItemSemillaDelErmitaño = luchadoresLuegoDeMagia._2.get.items.find { item => item === SemillaDelErmitaño() }
+    val tieneItemSemillaDelErmitaño = luchadoresLuegoDeMagia._2.items.find { item => item === SemillaDelErmitaño() }
 
     assert(luchadoresLuegoDeMagia._1.estado === Inconsciente && tieneItemSemillaDelErmitaño.isEmpty === true)
   }
 
   "krilin" should "aplicar magia dado que tiene las 7 esferas!" in {
 
-    val luchadoresLuegoDeMagia = Magia(superMagia)(krilin, Option(goku))
+    val luchadoresLuegoDeMagia = Magia(superMagia)(krilin, goku)
 
-    assert(luchadoresLuegoDeMagia._1.ki === 10000 && luchadoresLuegoDeMagia._2.get.ki === 0)
+    assert(luchadoresLuegoDeMagia._1.ki === 10000 && luchadoresLuegoDeMagia._2.ki === 0)
   }
 
   "mrSatan" should "no hacer magia, ya que es un simple humano sin esferas en su haber" in {
 
-    val luchadoresLuegoDeMagia = Magia(superMagia)(mrSatan, Option(goku))
+    val luchadoresLuegoDeMagia = Magia(superMagia)(mrSatan, goku)
 
-    assert(luchadoresLuegoDeMagia._1.ki === 1000 && luchadoresLuegoDeMagia._2.get.ki === 20000)
+    assert(luchadoresLuegoDeMagia._1.ki === 1000 && luchadoresLuegoDeMagia._2.ki === 20000)
   }
 
 }

@@ -20,7 +20,7 @@ object ArenaDeCell {
 
   case class Fusion(Compañero: Guerrero) extends Movimiento {
     def apply(luchadores: Luchadores) = {
-      (luchadores._1, luchadores._2.get) match {
+      (luchadores._1, luchadores._2) match {
         case (luchador, compañero) if luchador.esbueno() && compañero.esbueno() => (luchador.fusionateCon(compañero), luchadores._2)
         case _ => luchadores
       }
@@ -29,8 +29,8 @@ object ArenaDeCell {
 
   case class ComerseAOtro(criterio: Luchadores => Set[Movimiento]) extends Movimiento {
     def apply(luchadores: Luchadores) = {
-      (luchadores._1.raza, luchadores._2.get.ki) match {
-        case (Monstruo(), kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = criterio(luchadores)), luchadores._2.map(l2 => l2 morite))
+      (luchadores._1.raza, luchadores._2.ki) match {
+        case (Monstruo(), kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = criterio(luchadores)), luchadores._2 morite)
         case (_, _) => luchadores
       }
     }
@@ -38,7 +38,7 @@ object ArenaDeCell {
 
   type Movimiento = Luchadores => Luchadores
 
-  type Luchadores = (Guerrero, Option[Guerrero])
+  type Luchadores = (Guerrero, Guerrero)
 
   val dejarseFajar = (luchadores: Luchadores) => luchadores //TODO posiblemente cambie cuando quiera saber los turnos
 

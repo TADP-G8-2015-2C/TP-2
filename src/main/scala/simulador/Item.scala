@@ -10,16 +10,16 @@ case class UsarItem(item: Item) extends Movimiento {
     if (!luchadores._1.poseeItem(item)) {
       luchadores
     } else {
-      (item, luchadores._1.raza, luchadores._2.get.raza) match {
+      (item, luchadores._1.raza, luchadores._2.raza) match {
         case (Roma(), _, Androide(_))                     => luchadores
-        case (Roma(), _, _) if luchadores._2.get.ki < 300 => (luchadores._1, luchadores._2.map(defe => defe quedateInconsciente))
-        case (Filosa(), _, Saiyajin(true, _, _))          => (luchadores._1, luchadores._2.map(defe => defe cortarCola))
-        case (Filosa(), _, _)                             => (luchadores._1, luchadores._2.map(defe => defe disminuirKi (luchadores._1.ki / 100)))
+        case (Roma(), _, _) if luchadores._2.ki < 300 => (luchadores._1, luchadores._2 quedateInconsciente)
+        case (Filosa(), _, Saiyajin(true, _, _))          => (luchadores._1, luchadores._2 cortarCola)
+        case (Filosa(), _, _)                             => (luchadores._1, luchadores._2 disminuirKi (luchadores._1.ki / 100))
         case (Fuego(cant), _, _) if cant <= 0             => luchadores
         case (Fuego(cant), _, Humano()) => (luchadores._1.disminuirMunicion(cant),
-          luchadores._2.map(defe => defe disminuirKi (20)))
-        case (Fuego(cant), _, Namekusein()) if luchadores._2.get.estado == Inconsciente =>
-          (luchadores._1.disminuirMunicion(cant), luchadores._2.map(defe => defe disminuirKi (10)))
+          luchadores._2 disminuirKi (20))
+        case (Fuego(cant), _, Namekusein()) if luchadores._2.estado == Inconsciente =>
+          (luchadores._1.disminuirMunicion(cant), luchadores._2 disminuirKi (10))
         case (Fuego(cant), _, _)          => (luchadores._1.disminuirMunicion(cant), luchadores._2)
         case (SemillaDelErmitaño(), _, _) => (luchadores._1.recuperarMaxPotencial(), luchadores._2)
       }
