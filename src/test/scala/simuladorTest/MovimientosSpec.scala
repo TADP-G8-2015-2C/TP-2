@@ -1,5 +1,6 @@
 package simuladorTest
 
+import simulador._
 import simulador.ArenaDeCell._
 import org.scalatest._
 import org.scalatest.FlatSpec
