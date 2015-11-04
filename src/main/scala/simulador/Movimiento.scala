@@ -13,7 +13,7 @@ object ArenaDeCell {
     def apply(luchadores: Luchadores): Luchadores = {
       (luchadores._1.estado, luchadores._2.estado, this) match {
         case (Muerto, _, _) => luchadores
-        case (Inconsciente, _, UsarItem(SemillaDelErmitaño())) => movimiento(luchadores)
+        case (Inconsciente, _, UsarItem(SemillaDelErmitaño)) => movimiento(luchadores)
         case (Inconsciente, _, _) => luchadores
         case(NiUnaMenos(_),_,movimientoPosta) if movimientoPosta != DejarseFajar  => (movimiento(luchadores)._1.copy(estado=Normal),movimiento(luchadores)._2)  
         case _ => movimiento(luchadores)
@@ -25,8 +25,8 @@ object ArenaDeCell {
     (luchadores._1, luchadores._1.raza) match {
       case (_, Namekusein) => cambiarEstado(luchadores)
       case (_, Monstruo)   => cambiarEstado(luchadores)
-      case (guerrero, _) if guerrero.poseeItem(SieteEsferasDelDragon()) =>
-        cambiarEstado(guerrero.removerItem(SieteEsferasDelDragon()), luchadores._2)
+      case (guerrero, _) if guerrero.poseeItem(EsferasDelDragon(7)) =>
+        cambiarEstado(luchadores.onFst { l => l.usar7Esferas })
       case (_, _) => luchadores
     }
   })
@@ -57,7 +57,7 @@ object ArenaDeCell {
 
   case object convertirseEnMonoGigante extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1, luchadores._1.raza) match {
-      case (guerrero, Saiyajin(true, nivel, false)) if guerrero.poseeItem(FotoDeLaLuna()) => (guerrero.dejarDeSerSS.transformateEnMono, luchadores._2)
+      case (guerrero, Saiyajin(true, nivel, false)) if guerrero.poseeItem(FotoDeLaLuna) => (guerrero.dejarDeSerSS.transformateEnMono, luchadores._2)
       case (_, _) => luchadores
     }
   })

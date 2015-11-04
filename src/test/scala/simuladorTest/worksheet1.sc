@@ -13,6 +13,6 @@ object worksheet1 {
 	math.pow(10, 2)                           //> res4: Double = 100.0
 	a.filter { n => n> 1 }                    //> res5: scala.collection.immutable.Set[Int] = Set(3, 2)
 	val li=List.range(1, 5)                   //> li  : List[Int] = List(1, 2, 3, 4)
-	li ++ List(6)                             //> res6: List[Int] = List(1, 2, 3, 4, 6)
+	li.:+(6)                                  //> res6: List[Int] = List(1, 2, 3, 4, 6)
 	
 }

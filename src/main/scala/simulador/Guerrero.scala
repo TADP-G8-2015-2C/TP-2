@@ -36,6 +36,15 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def poseeItem(unItem: Item) = items.contains(unItem)
   def removerItem(unItem: Item) = copy(items = items.filterNot { item => item == unItem }) //este metodo lo hace, el que lo llama tiene que ser consciente de que tenga el item
 
+  def poseer7Esferas = {
+    List.range(1,8).forall { n => this.poseeItem(EsferasDelDragon(n)) }
+  }
+  
+  def usar7Esferas: Guerrero = {
+    if (this.poseer7Esferas) List.range(1,8).foldLeft(this)((l,n) => { l.removerItem(EsferasDelDragon(n))})
+    else this
+  }
+  
   def recuperarMaxPotencial() = copy(ki = kiMax)
 
   def esbueno() = List(Saiyajin(_, _, _), Namekusein, Humano).contains(this.raza) //Ez game
@@ -100,7 +109,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     List.range(1,cantidadDeRounds + 1).foldLeft(luchadores,plan)( (tupla,pepita) =>{
       val ((atacante,oponente),plan) = tupla
       val movIntermedio: Movimiento = atacante.movimientoMasEfectivoContra(oponente)(unCriterio)
-      (movIntermedio(atacante,oponente), plan ++ List(movIntermedio))
+      (movIntermedio(atacante,oponente), plan.:+(movIntermedio))
     })._2
     
   }
