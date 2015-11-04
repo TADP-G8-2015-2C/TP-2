@@ -2,6 +2,7 @@ package simulador
 
 import simulador.ArenaDeCell.Movimiento
 import simulador.ArenaDeCell.Luchadores
+
 /*
   abstract class Ataque(ataque: (Luchadores => Luchadores)) extends Movimiento((luchadores: Luchadores) => {
     def apply(luchadores: Luchadores): Luchadores = {
@@ -9,17 +10,22 @@ import simulador.ArenaDeCell.Luchadores
         case _ => ataque(luchadores)
       }
     }
-  })*/
+  })
 abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)]) extends Movimiento((luchadores: Luchadores) => {
 //  def apply(luchadores: Luchadores): Luchadores = {
      val (kiGastado, kiDañado) = ataque(luchadores)
-     (luchadores._2.raza) match {
-       case Androide(_)  => (luchadores._1.disminuirKi(kiGastado), luchadores._2.aumentarKi(kiDañado))
-       case _ => (luchadores._1.disminuirKi(kiGastado), luchadores._2.disminuirKi(kiDañado))
+     (luchadores._1.raza,luchadores._2.raza) match {
+       case (Androide(bateria1),Androide(bateria2))  => (luchadores._1.copy(raza = Androide(bateria1 -kiGastado)),
+                                        luchadores._2.copy(raza = Androide(bateria2 + kiDañado)))
+        case (Androide(bateria1),_)  => (luchadores._1.copy(raza = Androide(bateria1 -kiGastado)), 
+                                        luchadores._2.disminuirKi(kiDañado))
+        case (_,Androide(bateria2))  => (luchadores._1.disminuirKi(kiGastado), 
+                                        luchadores._2.copy(raza = Androide(bateria2 + kiDañado)))
+       case (_,_) => (luchadores._1.disminuirKi(kiGastado), luchadores._2.disminuirKi(kiDañado))
      }
  // }
 })
-
+*/
 //case class Fisico(ataque: Movimiento) extends Ataque {}
 
 case class muchosGolpesNinja() extends Movimiento ((luchadores: Luchadores) => {

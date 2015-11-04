@@ -12,7 +12,7 @@ abstract class Raza {
 
 case class Monstruo() extends Raza {}
 case class Humano() extends Raza {}
-case class Androide(override val bateria: Int = 0) extends Raza {}
+case class Androide(override val bateria: Int) extends Raza {}
 case class Namekusein() extends Raza {}
 case class Fusionado(guerreroOriginal: Guerrero) extends Raza {}
 case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean = false) extends Raza {
