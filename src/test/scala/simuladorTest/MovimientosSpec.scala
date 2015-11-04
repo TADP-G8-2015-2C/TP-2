@@ -16,7 +16,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val androide18 = Guerrero(Androide(1000), 0, 50000, List(), Set(), Normal)
   val dabura = Guerrero(Monstruo(), 1000, 50000, List(), Set(), Normal)
   val goku = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
-
+  val gokuNormal = Guerrero(Saiyajin(true, 1), 1000, 50000, List(), Set(), Normal)
   val humanoConItemRomo = Guerrero(Humano(), 1000, 50000, List(Roma()), Set(), Normal)
   val yajirobe = Guerrero(Humano(), 1000, 5000, List(Filosa()), Set(), Normal)
   val ramboConMunicion = Guerrero(Humano(), 2000, 3000, List(Fuego(100)), Set(), Normal)
@@ -36,7 +36,22 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
+  //test genkidama
+  "goku" should "intenta lanzar genkidama sin dejarse fajar" in {
+    val (gokuAfter, mrSatanAfter) = genkidama(gokuNormal, mrSatan)
+    assertResult((1000, 1000)) {
+      (gokuAfter.ki, mrSatanAfter.ki)
 
+    }
+  } 
+      "goku" should "lanzar genkidama dejandose fajar 2 turnos" in {
+    val (gokuAfter, mrSatanAfter) = genkidama(DejarseFajar(DejarseFajar(gokuNormal, mrSatan)))
+    assertResult((1000, 900,NiUnaMenos(2))) {
+      (gokuAfter.ki, mrSatanAfter.ki,gokuAfter.estado)
+    } 
+      }
+
+ 
   //Test ondas
   "bulma" should "tirar manseko sin hacer nada porque no tiene kiSufieciente" in {
     val masenkoAfter = onda(105)(bulma, mrSatan)
@@ -46,7 +61,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   }
   "androide18" should "tirar manseko sin hacer nada porque no tiene kiSufieciente" in {
     val (androide18After, mrSatanAfter) = onda(1005)(androide18, mrSatan)
-    assertResult((androide18After, mrSatanAfter)) {
+    assertResult((androide18, mrSatan)) {
       (androide18After, mrSatanAfter)
     }
   }

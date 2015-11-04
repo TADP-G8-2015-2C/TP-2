@@ -58,11 +58,11 @@ case class onda(kiNecesario: Int) extends Movimiento ((luchadores: Luchadores) =
       case (_, _) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario * 2) )
       case (_, _) => luchadores
     }
- //ES MUY FEO ESTO MUCHISIMA LOGICA REPETIDA MATAN CONEJITOS
+ //ES MUY FEO ESTO MUCHISIMA LOGICA REPETIDA MATAN CONEJITOS 
 })
 case object genkidama extends Movimiento((luchadores: Luchadores) => {
   (luchadores._1.estado) match {
-    case (NiUnaMenos(rounds)) =>(luchadores._1, luchadores._2.disminuirKi(10^rounds))
+    case (NiUnaMenos(rounds)) =>(luchadores._1, luchadores._2.disminuirKi(math.pow(10, rounds).asInstanceOf[Int]))
     case _ => luchadores
   }
 })
