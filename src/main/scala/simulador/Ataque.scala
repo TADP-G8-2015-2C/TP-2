@@ -1,6 +1,7 @@
 package simulador
 
 import simulador.ArenaDeCell.Movimiento
+import simulador.TuplasUtils._
 import simulador.ArenaDeCell.Luchadores
 
 /*
@@ -10,9 +11,12 @@ import simulador.ArenaDeCell.Luchadores
         case _ => ataque(luchadores)
       }
     }
-  })
-abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)]) extends Movimiento((luchadores: Luchadores) => {
-//  def apply(luchadores: Luchadores): Luchadores = {
+  })*/
+/*
+abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)]) 
+                                              extends Movimiento((luchadores: Luchadores) => {
+  override def apply(luchadores: Luchadores): Luchadores = {
+   super apply(ataque)
      val (kiGastado, kiDañado) = ataque(luchadores)
      (luchadores._1.raza,luchadores._2.raza) match {
        case (Androide(bateria1),Androide(bateria2))  => (luchadores._1.copy(raza = Androide(bateria1 -kiGastado)),
@@ -21,11 +25,11 @@ abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)]) extends Mo
                                         luchadores._2.disminuirKi(kiDañado))
         case (_,Androide(bateria2))  => (luchadores._1.disminuirKi(kiGastado), 
                                         luchadores._2.copy(raza = Androide(bateria2 + kiDañado)))
-       case (_,_) => (luchadores._1.disminuirKi(kiGastado), luchadores._2.disminuirKi(kiDañado))
+       case (_,_) => luchadores.//(luchadores._1.disminuirKi(kiGastado), luchadores._2.disminuirKi(kiDañado))
      }
- // }
-})
-*/
+  }
+}) */
+
 //case class Fisico(ataque: Movimiento) extends Ataque {}
 
 case class muchosGolpesNinja() extends Movimiento ((luchadores: Luchadores) => {
@@ -53,16 +57,18 @@ case class onda(kiNecesario: Int) extends Movimiento ((luchadores: Luchadores) =
  //quizas con un if y una abstraccion me podría asegurar de que siempre tenga energia necesaria
     (luchadores._1.raza, luchadores._2.raza) match {
       case (Androide(bateria), Monstruo()) if bateria >= kiNecesario => (luchadores._1.copy(raza = Androide(bateria - kiNecesario)), luchadores._2 disminuirKi (kiNecesario / 2))
-      case (Androide(bateria), _) if bateria >= kiNecesario => (luchadores._1.copy(raza = Androide(bateria - kiNecesario)), luchadores._2 disminuirKi (kiNecesario * 2))
+       case (Androide(bateria1),Androide(bateria2)) if bateria1 >= kiNecesario  => (luchadores._1.copy(raza = Androide(bateria1 -kiNecesario)),luchadores._2.copy(raza = Androide(bateria2 + kiNecesario)))
       case (_, Monstruo()) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario / 2) )
+      case (Androide(bateria), _) if bateria >= kiNecesario => (luchadores._1.copy(raza = Androide(bateria - kiNecesario)), luchadores._2 disminuirKi (kiNecesario * 2))
       case (_, _) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario * 2) )
       case (_, _) => luchadores
     }
  //ES MUY FEO ESTO MUCHISIMA LOGICA REPETIDA MATAN CONEJITOS 
 })
 case object genkidama extends Movimiento((luchadores: Luchadores) => {
-  (luchadores._1.estado) match {
-    case (NiUnaMenos(rounds)) =>(luchadores._1, luchadores._2.disminuirKi(math.pow(10, rounds).asInstanceOf[Int]))
+  (luchadores._1.estado,luchadores._2.raza) match {
+    case (NiUnaMenos(rounds),Androide(_)) =>(luchadores._1, luchadores._2.copy(raza = Androide(math.pow(10, rounds).asInstanceOf[Int])))
+    case (NiUnaMenos(rounds),_) =>(luchadores._1, luchadores._2.disminuirKi(math.pow(10, rounds).asInstanceOf[Int]))
     case _ => luchadores
   }
 })

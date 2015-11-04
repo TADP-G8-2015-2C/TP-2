@@ -46,7 +46,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   } 
       "goku" should "lanzar genkidama dejandose fajar 2 turnos" in {
     val (gokuAfter, mrSatanAfter) = genkidama(DejarseFajar(DejarseFajar(gokuNormal, mrSatan)))
-    assertResult((1000, 900,NiUnaMenos(2))) {
+    assertResult((1000, 900,Normal)) {
       (gokuAfter.ki, mrSatanAfter.ki,gokuAfter.estado)
     } 
       }
