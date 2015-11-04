@@ -92,7 +92,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     val plan: List[Movimiento] = List()
     val tupla = (luchadores,plan)
     
-    List.range(1,cantidadDeRounds).foldLeft(luchadores,plan)( (tupla,pepita) =>{
+    List.range(1,cantidadDeRounds + 1).foldLeft(luchadores,plan)( (tupla,pepita) =>{
       val ((atacante,oponente),plan) = tupla
       val movIntermedio: Movimiento = atacante.movimientoMasEfectivoContra(oponente)(unCriterio)
       (movIntermedio(atacante,oponente), plan ++ List(movIntermedio))
