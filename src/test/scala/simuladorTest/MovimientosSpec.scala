@@ -13,8 +13,10 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   val bulma = Guerrero(Humano(), 100, 50000, List(), Set(), Normal)
   val mrSatan = Guerrero(Humano(), 1000, 50000, List(), Set(), Normal)
-  val goku = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
   val androide18 = Guerrero(Androide(1000), 0, 50000, List(), Set(), Normal)
+  val dabura = Guerrero(Monstruo(), 1000, 50000, List(), Set(), Normal)
+  val goku = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
+
   val humanoConItemRomo = Guerrero(Humano(), 1000, 50000, List(Roma()), Set(), Normal)
   val yajirobe = Guerrero(Humano(), 1000, 5000, List(Filosa()), Set(), Normal)
   val ramboConMunicion = Guerrero(Humano(), 2000, 3000, List(Fuego(100)), Set(), Normal)
@@ -33,6 +35,48 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
+  }
+
+  //Test ondas
+  "bulma" should "tirar manseko sin hacer nada porque no tiene kiSufieciente" in {
+    val masenkoAfter = onda(105)(bulma, mrSatan)
+    assertResult((100, 1000)) {
+      (masenkoAfter._1.ki, masenkoAfter._2.ki)
+    }
+  }
+  "androide18" should "tirar manseko sin hacer nada porque no tiene kiSufieciente" in {
+    val (androide18After, mrSatanAfter) = onda(1005)(androide18, mrSatan)
+    assertResult((androide18After, mrSatanAfter)) {
+      (androide18After, mrSatanAfter)
+    }
+  }
+
+  "androide18" should "tirar manseko a humano gasta el doble" in {
+    val (androide18After, mrSatanAfter) = onda(300)(androide18, mrSatan)
+    assertResult((700, 400)) {
+      (androide18After.raza.bateria, mrSatanAfter.ki)
+    }
+  }
+
+  "androide18" should "tirar manseko a monstruo gasta la mitad" in {
+    val (androide18After, daburaAfter) = onda(300)(androide18, dabura)
+    assertResult((700, 850)) {
+      (androide18After.raza.bateria, daburaAfter.ki)
+    }
+  }
+
+  "cualquiera" should "tirar manseko a monstruo gasta la mitad" in {
+    val (mrSatanAfter, daburaAfter) = onda(300)(mrSatan, dabura)
+    assertResult((700, 850)) {
+      (mrSatanAfter.ki, daburaAfter.ki)
+    }
+  }
+
+  "cualquiera" should "tirar manseko a cualquiera el doble" in {
+    val (mrSatanAfter, bulmaAfter) = onda(30)(mrSatan, bulma)
+    assertResult((970, 40)) {
+      (mrSatanAfter.ki, bulmaAfter.ki)
+    }
   }
 
   //Test cargarKi
@@ -79,7 +123,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   "bulma" should "quedar nomal al recibir ataque con item Romo de alguien que no posee dicho item aunque tiene menos de 300 de ki" in {
 
     val humanoSinItemRomo = Guerrero(Humano(), 1000, 50000, List(), Set(), Normal)
-    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoSinItemRomo,bulma))
+    val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoSinItemRomo, bulma))
 
     assert(luchadoresLuegoDeUsarItemRoma._2.estado === Normal)
   }

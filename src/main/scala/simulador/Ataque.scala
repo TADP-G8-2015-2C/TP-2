@@ -2,10 +2,25 @@ package simulador
 
 import simulador.ArenaDeCell.Movimiento
 import simulador.ArenaDeCell.Luchadores
+/*
+  abstract class Ataque(ataque: (Luchadores => Luchadores)) extends Movimiento((luchadores: Luchadores) => {
+    def apply(luchadores: Luchadores): Luchadores = {
+      (luchadores._1.estado, luchadores._2.estado, this) match {
+        case _ => ataque(luchadores)
+      }
+    }
+  })*/
+abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)]) extends Movimiento((luchadores: Luchadores) => {
+//  def apply(luchadores: Luchadores): Luchadores = {
+     val (kiGastado, kiDañado) = ataque(luchadores)
+     (luchadores._2.raza) match {
+       case Androide(_)  => (luchadores._1.disminuirKi(kiGastado), luchadores._2.aumentarKi(kiDañado))
+       case _ => (luchadores._1.disminuirKi(kiGastado), luchadores._2.disminuirKi(kiDañado))
+     }
+ // }
+})
 
-trait Ataque {}
-case class Energia(ataque: Movimiento) extends Ataque {}
-case class Fisico(ataque: Movimiento) extends Ataque {}
+//case class Fisico(ataque: Movimiento) extends Ataque {}
 
 case class muchosGolpesNinja() extends Movimiento ((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.raza) match {
@@ -21,7 +36,7 @@ case class muchosGolpesNinja() extends Movimiento ((luchadores: Luchadores) => {
 case class Explotar() extends Movimiento ((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.raza) match {
       case (Monstruo(), Namekusein())        => (luchadores._1.morite(), luchadores._2 disminuirKiNamekusein (luchadores._1.ki * 2))
-      case (Androide(bateria), Namekusein()) => (luchadores._1.morite(), luchadores._2 disminuirKi (bateria * 3))
+      case (Androide(bateria), Namekusein()) => (luchadores._1.morite(), luchadores._2 disminuirKiNamekusein (bateria * 3))
       case (Monstruo(), _)                   => (luchadores._1.morite(), luchadores._2 disminuirKi (luchadores._1.ki * 2) )
       case (Androide(bateria), _)            => (luchadores._1.morite(), luchadores._2 disminuirKi (bateria * 3))
       case (_, _)                            => luchadores
@@ -31,9 +46,9 @@ case class Explotar() extends Movimiento ((luchadores: Luchadores) => {
 case class onda(kiNecesario: Int) extends Movimiento ((luchadores: Luchadores) => {
  //quizas con un if y una abstraccion me podría asegurar de que siempre tenga energia necesaria
     (luchadores._1.raza, luchadores._2.raza) match {
-      case (Androide(bateria), Monstruo()) if bateria >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario / 2))
-      case (Androide(bateria), _) if bateria >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario * 2))
-      case (_, Monstruo()) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKiNamekusein (kiNecesario / 2))
+      case (Androide(bateria), Monstruo()) if bateria >= kiNecesario => (luchadores._1.copy(raza = Androide(bateria - kiNecesario)), luchadores._2 disminuirKi (kiNecesario / 2))
+      case (Androide(bateria), _) if bateria >= kiNecesario => (luchadores._1.copy(raza = Androide(bateria - kiNecesario)), luchadores._2 disminuirKi (kiNecesario * 2))
+      case (_, Monstruo()) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario / 2) )
       case (_, _) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario * 2) )
       case (_, _) => luchadores
     }
