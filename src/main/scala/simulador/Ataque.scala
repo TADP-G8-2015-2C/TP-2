@@ -39,6 +39,12 @@ case class onda(kiNecesario: Int) extends Movimiento ((luchadores: Luchadores) =
     }
  //ES MUY FEO ESTO MUCHISIMA LOGICA REPETIDA MATAN CONEJITOS
 })
+case object genkidama extends Movimiento((luchadores: Luchadores) => {
+  (luchadores._1.estado) match {
+    case (NiUnaMenos(rounds)) =>(luchadores._1, luchadores._2.disminuirKi(10^rounds))
+    case _ => luchadores
+  }
+})
 
   /*   case class atacarCon(ataque: Ataque) extends Movimiento {
       def apply(luchadores: Luchadores) = {
