@@ -39,18 +39,18 @@ class MovimientosSpec extends FlatSpec with Matchers {
   "mrSatan" should "cargarKi y subir 100 de ki por ser Guerrero" in {
 
     assertResult(1100) {
-      cargarKi(mrSatan, null)._1.ki
+      cargarKi(mrSatan, krilin)._1.ki
     }
   }
 
   "goku" should "cargarKi y subir ki en  150 * nivel de SS por ser Saiyajin" in {
 
-    assert(cargarKi(goku, null)._1.ki === 20450)
+    assert(cargarKi(goku, krilin)._1.ki === 20450)
   }
 
   "androide18" should "cargarKi y no subir nada (seguir en 0) por ser un Androide" in {
 
-    assert(cargarKi(androide18, null)._1.ki === 0)
+    assert(cargarKi(androide18, krilin)._1.ki === 0)
   }
 
   //Test usarItem Romo

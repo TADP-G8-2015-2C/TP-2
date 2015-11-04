@@ -5,8 +5,7 @@ import simulador.ArenaDeCell.Luchadores
 
 trait Item {}
 //esta parte quedo demasiado funcional pn, habría que delegar un poco y ver que se puede ahcer para no repetir tanta logica
-case class UsarItem(item: Item) extends Movimiento {
-  def apply(luchadores: Luchadores) = {
+case class UsarItem(item: Item) extends Movimiento ((luchadores: Luchadores) => {
     if (!luchadores._1.poseeItem(item)) {
       luchadores
     } else {
@@ -24,8 +23,7 @@ case class UsarItem(item: Item) extends Movimiento {
         case (SemillaDelErmitaño(), _, _) => (luchadores._1.recuperarMaxPotencial(), luchadores._2)
       }
     }
-  }
-}
+})
 
 case class Roma() extends Item {}
 case class Filosa() extends Item {}
