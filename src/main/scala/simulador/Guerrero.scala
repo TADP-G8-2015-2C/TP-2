@@ -69,21 +69,36 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   type CriterioDeCombate = Luchadores => Int
 
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Movimiento = {
-    val luchadores = (this,enemigo)
+    val luchadores = (this, enemigo)
     val movMasEfectivo = movimientos.maxBy { mov => criterio(mov(luchadores)) }
-     if (criterio(movMasEfectivo(luchadores)) <= 0) 
-       throw new RuntimeException("No tiene movimiento mas efectivo contra oponente")
-     else movMasEfectivo
+    if (criterio(movMasEfectivo(luchadores)) <= 0)
+      throw new RuntimeException("No tiene movimiento mas efectivo contra oponente")
+    else movMasEfectivo
   }
   def mayorVentajaKi(luchadores: Luchadores): Int = {
     luchadores._1.ki - luchadores._2.ki
   }
-   def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero): Luchadores = {
-    val luchadores = movElegido(this,enemigo)
-    val movContraAtaque = enemigo.movimientoMasEfectivoContra(this)(mayorVentajaKi)
+  def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)
+                   (criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
+    val luchadores = movElegido(this, enemigo)
+    val movContraAtaque = enemigo.movimientoMasEfectivoContra(this)(criterio)
     movContraAtaque(luchadores)
   }
+
   
+  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)
+                        (unCriterio: CriterioDeCombate) : List[Movimiento] = {
+    val luchadores = (this,enemigo)
+    val plan: List[Movimiento] = List()
+    val tupla = (luchadores,plan)
+    
+    List.range(1,cantidadDeRounds).foldLeft(luchadores,plan)( (tupla,pepita) =>{
+      val ((atacante,oponente),plan) = tupla
+      val movIntermedio: Movimiento = atacante.movimientoMasEfectivoContra(oponente)(unCriterio)
+      (movIntermedio(atacante,oponente), plan ++ List(movIntermedio))
+    })._2
+    
+  }
 
 }
 
