@@ -77,6 +77,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     }
   }
   def quedateInconsciente() = raza.meQuedeInconsciente(this).copy(estado = Inconsciente)
+  
+   def quedateNormal() = copy(estado = Normal)
 
   def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
 

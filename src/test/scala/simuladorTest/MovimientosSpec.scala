@@ -27,6 +27,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val krilin = Guerrero(Humano, 5000, 10000, esferas7, Set(), Normal)
   val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
   val monoGigante = Guerrero(Saiyajin(false, 0, false), 5000, 10000, List(), Set(), Normal)
+  val inconsciente = Guerrero(Monstruo, 5000, 10000, List(), Set(), Inconsciente)
 
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
@@ -228,6 +229,12 @@ class MovimientosSpec extends FlatSpec with Matchers {
     val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño)((karin, gokuSS3))
 
     assert(luchadoresLuegoDeUsarItemSemilla._1.ki === luchadoresLuegoDeUsarItemSemilla._1.kiMax)
+  }
+  
+  "inconsciente" should "recuperarse a normal" in {
+    assertResult(Normal){
+       UsarItem(SemillaDelErmitaño)((inconsciente, gokuSS3))._1.estado
+    }
   }
 
   //Test Magia
