@@ -24,6 +24,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val karin = Guerrero(Humano, 10, 100, List(SemillaDelErmitaño()), Set(), Normal)
   val monstruoFeo = Guerrero(Monstruo, 1000, 10000, List(), Set(), Normal)
   val krilin = Guerrero(Humano, 5000, 10000, List(SieteEsferasDelDragon()), Set(), Normal)
+  val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
 
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
@@ -36,6 +37,14 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
+
+  //test NiUnaMenos
+  "kingCold" should "kingCold se deja fajar y le cambia el estado" in {
+    val (kingColdAfter, mrSatanAfter) = DejarseFajar(kingCold, mrSatan)
+    assertResult((Normal, NiUnaMenos(1))) {
+      (kingCold.estado, kingColdAfter.estado)
+    }
+  }
   //test genkidama
   "goku" should "intenta lanzar genkidama sin dejarse fajar" in {
     val (gokuAfter, mrSatanAfter) = genkidama(gokuNormal, mrSatan)
@@ -43,15 +52,14 @@ class MovimientosSpec extends FlatSpec with Matchers {
       (gokuAfter.ki, mrSatanAfter.ki)
 
     }
-  } 
-      "goku" should "lanzar genkidama dejandose fajar 2 turnos" in {
+  }
+  "goku" should "lanzar genkidama dejandose fajar 2 turnos" in {
     val (gokuAfter, mrSatanAfter) = genkidama(DejarseFajar(DejarseFajar(gokuNormal, mrSatan)))
-    assertResult((1000, 900,Normal)) {
-      (gokuAfter.ki, mrSatanAfter.ki,gokuAfter.estado)
-    } 
-      }
+    assertResult((1000, 900, Normal)) {
+      (gokuAfter.ki, mrSatanAfter.ki, gokuAfter.estado)
+    }
+  }
 
- 
   //Test ondas
   "bulma" should "tirar manseko sin hacer nada porque no tiene kiSufieciente" in {
     val masenkoAfter = onda(105)(bulma, mrSatan)

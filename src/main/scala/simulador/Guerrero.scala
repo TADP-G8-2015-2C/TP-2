@@ -57,9 +57,14 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     copy(raza = Fusionado(this), ki = ki + compañero.ki, kiMax = kiMax + compañero.kiMax, movimientos = movimientos ++ compañero.movimientos)
 
   }
-
+  
   def morite() = copy(estado = Muerto)
-
+  def quedateNiUnaMenos()={
+    estado match{
+      case NiUnaMenos(turnos) => copy(estado = NiUnaMenos(turnos + 1))
+      case _ => copy(estado = NiUnaMenos())
+    }
+  }
   def quedateInconsciente() = raza.meQuedeInconsciente(this).copy(estado = Inconsciente)
 
   def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))

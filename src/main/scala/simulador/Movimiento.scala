@@ -4,6 +4,8 @@ import scala.collection.immutable.List
 import scala.collection.immutable.Set
 import scala.collection.GenTraversableOnce
 
+import simulador.TuplasUtils._
+
 object ArenaDeCell {
   type Luchadores = (Guerrero, Guerrero)
   
@@ -44,11 +46,7 @@ object ArenaDeCell {
   })
 
    case object DejarseFajar extends Movimiento((luchadores: Luchadores) => {
-     luchadores._1.estado match{
-       case NiUnaMenos(turnos) => ( luchadores._1.copy(estado = NiUnaMenos(turnos +1)), luchadores._2)
-       case _ => ( luchadores._1.copy(estado = NiUnaMenos(1)), luchadores._2)
-     }
-   })
+    luchadores.onFst { l1 => l1 quedateNiUnaMenos() } })
  
   case object cargarKi extends Movimiento((luchadores: Luchadores) => {
     luchadores._1.raza match {
