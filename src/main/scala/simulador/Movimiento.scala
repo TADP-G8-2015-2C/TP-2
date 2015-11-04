@@ -44,17 +44,16 @@ object ArenaDeCell {
       case (_, _) => luchadores
     }
   })
-
+  
    case object DejarseFajar extends Movimiento((luchadores: Luchadores) => {
-    luchadores.onFst { l1 => l1 quedateNiUnaMenos() } })
+    luchadores.onFst ( _.quedateNiUnaMenos() )   } )
  
   case object cargarKi extends Movimiento((luchadores: Luchadores) => {
     luchadores._1.raza match {
       case Androide                        => luchadores
-      case Saiyajin(_, nivel, _) if nivel > 0 => (luchadores._1.aumentarKi(150 * nivel), luchadores._2) //corregir y hacer que matchee con ss
-      case _                                  => (luchadores._1.aumentarKi(100), luchadores._2)
-    }
-  })
+      case Saiyajin(_, nivel, false) if nivel > 0 => luchadores.onFst ( _.aumentarKi(150 * nivel) ) 
+      case _                                  => luchadores.onFst (_.aumentarKi(100) ) }
+    })
 
   case object convertirseEnMonoGigante extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1, luchadores._1.raza) match {

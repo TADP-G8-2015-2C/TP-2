@@ -15,7 +15,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val mrSatan = Guerrero(Humano, 1000, 50000, List(), Set(), Normal)
   val androide18 = Guerrero(Androide, 1000, 50000, List(), Set(), Normal)
   val dabura = Guerrero(Monstruo, 1000, 50000, List(), Set(), Normal)
-  val goku = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
+  val gokuSS3 = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
   val gokuNormal = Guerrero(Saiyajin(true, 1), 1000, 50000, List(), Set(), Normal)
   val humanoConItemRomo = Guerrero(Humano, 1000, 50000, List(Roma()), Set(), Normal)
   val yajirobe = Guerrero(Humano, 1000, 5000, List(Filosa()), Set(), Normal)
@@ -109,10 +109,15 @@ class MovimientosSpec extends FlatSpec with Matchers {
       cargarKi(mrSatan, krilin)._1.ki
     }
   }
+   "androide18" should "cargarKi y subir 0 de ki por ser Androide" in {
+    assertResult(androide18.ki) {
+       cargarKi(androide18, bulma)._1.ki
+    }
+  }
 
   "goku" should "cargarKi y subir ki en  150 * nivel de SS por ser Saiyajin" in {
 
-    assert(cargarKi(goku, krilin)._1.ki === 20450)
+    assert(cargarKi(gokuSS3, krilin)._1.ki === 20450)
   }
 
   "androide18" should "cargarKi y no subir nada (seguir en 0) por ser un Androide" in {
@@ -162,7 +167,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //TODO falta ver lo del mono gigante.
   "yajirobe" should "cortar cola de goku y quedar en 1 de ki por ser este un saiyajin con cola y darle con arma filosa" in {
 
-    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, goku))
+    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa())((yajirobe, gokuSS3))
 
     assert(luchadoresLuegoDeUsarItemFiloso._2.raza === Saiyajin(false, 3) && luchadoresLuegoDeUsarItemFiloso._2.ki === 1)
   }
@@ -208,7 +213,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //Test semilla de ermitaño
   "karin" should "recuperarse al máximo el ki  por tener semillas del Ermitanio" in {
 
-    val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño())((karin, goku))
+    val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño())((karin, gokuSS3))
 
     assert(luchadoresLuegoDeUsarItemSemilla._1.ki === luchadoresLuegoDeUsarItemSemilla._1.kiMax)
   }
@@ -233,14 +238,14 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   "krilin" should "aplicar magia dado que tiene las 7 esferas!" in {
 
-    val luchadoresLuegoDeMagia = Magia(superMagia)(krilin, goku)
+    val luchadoresLuegoDeMagia = Magia(superMagia)(krilin, gokuSS3)
 
     assert(luchadoresLuegoDeMagia._1.ki === 10000 && luchadoresLuegoDeMagia._2.ki === 0)
   }
 
   "mrSatan" should "no hacer magia, ya que es un simple humano sin esferas en su haber" in {
 
-    val luchadoresLuegoDeMagia = Magia(superMagia)(mrSatan, goku)
+    val luchadoresLuegoDeMagia = Magia(superMagia)(mrSatan, gokuSS3)
 
     assert(luchadoresLuegoDeMagia._1.ki === 1000 && luchadoresLuegoDeMagia._2.ki === 20000)
   }
