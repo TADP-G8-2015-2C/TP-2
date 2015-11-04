@@ -75,6 +75,11 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
        throw new RuntimeException("No tiene movimiento mas efectivo contra oponente")
      else movMasEfectivo
   }
+  def mayorVentajaKi(luchadores: Luchadores): Int = {
+    luchadores._1.ki - luchadores._2.ki
+  }
+  
+
 }
 
 trait Estado {}
