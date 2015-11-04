@@ -32,6 +32,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 
   def aprenderMovimiento(unMovimiento: Movimiento) = copy(movimientos = movimientos + (unMovimiento))
+  def sabeMovimiento(unMovimiento: Movimiento) = movimientos.contains(unMovimiento)
   def agregarItem(unItem: Item) = copy(items = items.+:(unItem))
   def poseeItem(unItem: Item) = items.contains(unItem)
   def removerItem(unItem: Item) = copy(items = items.filterNot { item => item == unItem }) //este metodo lo hace, el que lo llama tiene que ser consciente de que tenga el item
@@ -47,6 +48,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   
   def recuperarMaxPotencial() = copy(ki = kiMax)
 
+  
   def esbueno() = List(Saiyajin(_, _, _), Namekusein, Humano).contains(this.raza) //Ez game
   def esMalo() = List(Androide, Monstruo).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
 

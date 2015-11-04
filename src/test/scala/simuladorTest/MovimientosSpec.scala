@@ -26,6 +26,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val esferas7: List[Item] = List.range(1, 8).map { n => EsferasDelDragon(n) }
   val krilin = Guerrero(Humano, 5000, 10000, esferas7, Set(), Normal)
   val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
+  val monoGigante = Guerrero(Saiyajin(false, 0, false), 5000, 10000, List(), Set(), Normal)
 
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
@@ -165,7 +166,17 @@ class MovimientosSpec extends FlatSpec with Matchers {
     assert(luchadoresLuegoDeUsarItemFiloso._2.ki === 990)
   }
 
-  //TODO falta ver lo del mono gigante.
+  "gokuNormal" should " pierde cola" in {
+    assertResult(Saiyajin(false, 1, false)) {
+      UsarItem(Filosa)((yajirobe, gokuNormal))._2.raza
+    }
+  }
+
+  "monoGigante" should " pierde cola y se queda saiyajin petoso" in {
+    assertResult(Saiyajin(false, 0, false)) {
+      UsarItem(Filosa)((yajirobe, monoGigante))._2.raza
+    }
+  }
   "yajirobe" should "cortar cola de goku y quedar en 1 de ki por ser este un saiyajin con cola y darle con arma filosa" in {
 
     val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa)((yajirobe, gokuSS3))

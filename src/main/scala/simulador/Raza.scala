@@ -33,5 +33,8 @@ case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean = false)
     unGuerrero.dejarDeSerSS()
 
   }
+//  require(monoGigante == true, nivel == 0)//si es monoGigante no puede ser saiyajin
+//  require(cola == false,monoGigante == false)// si no tiene cola no puede ser monoGigante
+  //TODO poner estos require pero bien
 }
 
