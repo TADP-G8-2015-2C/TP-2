@@ -36,7 +36,7 @@ object ArenaDeCell {
     }
   })
 
-  case class ComerseAOtro(digestion: Function[Luchadores, Set[Movimiento]]) extends Movimiento((luchadores: Luchadores) => {
+  case class ComerseAOtro(digestion: Function1[Luchadores, Set[Movimiento]]) extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.ki) match {
       case (Monstruo, kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = digestion(luchadores)), luchadores._2 morite)
       case (_, _) => luchadores
