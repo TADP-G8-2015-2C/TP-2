@@ -78,6 +78,11 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def mayorVentajaKi(luchadores: Luchadores): Int = {
     luchadores._1.ki - luchadores._2.ki
   }
+   def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero): Luchadores = {
+    val luchadores = movElegido(this,enemigo)
+    val movContraAtaque = enemigo.movimientoMasEfectivoContra(this)(mayorVentajaKi)
+    movContraAtaque(luchadores)
+  }
   
 
 }
