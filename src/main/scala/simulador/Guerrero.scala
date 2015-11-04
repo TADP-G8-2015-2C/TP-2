@@ -72,4 +72,5 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   case object Inconsciente extends Estado
   case object Muerto extends Estado
   case object Normal extends Estado
+  case class NiUnaMenos(turnos: Int = 0) extends Estado
   
