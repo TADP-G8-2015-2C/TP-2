@@ -7,14 +7,13 @@ abstract class Raza {
   def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
   def subirDeNivel(unGuerrero: Guerrero) = this
   def meQuedeInconsciente(unGuerrero: Guerrero) = unGuerrero
-  val bateria = 0
 }
 
-case class Monstruo() extends Raza {}
-case class Humano() extends Raza {}
-case class Androide(override val bateria: Int) extends Raza {}
-case class Namekusein() extends Raza {}
-case class Fusionado(guerreroOriginal: Guerrero) extends Raza {}
+case object Monstruo extends Raza 
+case object Humano extends Raza 
+case object Androide extends Raza 
+case object Namekusein extends Raza 
+case class Fusionado(guerreroOriginal: Guerrero) extends Raza 
 case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean = false) extends Raza {
 
   override def subirDeNivel(guerrero: Guerrero) = {

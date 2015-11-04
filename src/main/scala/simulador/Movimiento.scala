@@ -21,8 +21,8 @@ object ArenaDeCell {
 
   case class Magia(cambiarEstado: Function1[Luchadores, Luchadores]) extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1, luchadores._1.raza) match {
-      case (_, Namekusein()) => cambiarEstado(luchadores)
-      case (_, Monstruo())   => cambiarEstado(luchadores)
+      case (_, Namekusein) => cambiarEstado(luchadores)
+      case (_, Monstruo)   => cambiarEstado(luchadores)
       case (guerrero, _) if guerrero.poseeItem(SieteEsferasDelDragon()) =>
         cambiarEstado(guerrero.removerItem(SieteEsferasDelDragon()), luchadores._2)
       case (_, _) => luchadores
@@ -38,7 +38,7 @@ object ArenaDeCell {
 
   case class ComerseAOtro(digestion: Function[Luchadores, Set[Movimiento]]) extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.ki) match {
-      case (Monstruo(), kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = digestion(luchadores)), luchadores._2 morite)
+      case (Monstruo, kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = digestion(luchadores)), luchadores._2 morite)
       case (_, _) => luchadores
     }
   })
@@ -52,7 +52,7 @@ object ArenaDeCell {
  
   case object cargarKi extends Movimiento((luchadores: Luchadores) => {
     luchadores._1.raza match {
-      case Androide(_)                        => luchadores
+      case Androide                        => luchadores
       case Saiyajin(_, nivel, _) if nivel > 0 => (luchadores._1.aumentarKi(150 * nivel), luchadores._2) //corregir y hacer que matchee con ss
       case _                                  => (luchadores._1.aumentarKi(100), luchadores._2)
     }

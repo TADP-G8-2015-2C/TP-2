@@ -38,8 +38,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
     def recuperarMaxPotencial() = copy(ki = kiMax)
 
-    def esbueno() = List(Saiyajin(_, _, _), Namekusein(), Humano()).contains(this.raza) //Ez game
-    def esMalo() = List(Androide(_), Monstruo()).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
+    def esbueno() = List(Saiyajin(_, _, _), Namekusein, Humano).contains(this.raza) //Ez game
+    def esMalo() = List(Androide, Monstruo).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
 
     def disminuirMunicion(cant: Int) = {
       removerItem(Fuego(cant))

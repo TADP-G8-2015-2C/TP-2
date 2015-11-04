@@ -11,19 +11,19 @@ import scala.collection.GenTraversableOnce
 
 class MovimientosSpec extends FlatSpec with Matchers {
 
-  val bulma = Guerrero(Humano(), 100, 50000, List(), Set(), Normal)
-  val mrSatan = Guerrero(Humano(), 1000, 50000, List(), Set(), Normal)
-  val androide18 = Guerrero(Androide(1000), 0, 50000, List(), Set(), Normal)
-  val dabura = Guerrero(Monstruo(), 1000, 50000, List(), Set(), Normal)
+  val bulma = Guerrero(Humano, 100, 50000, List(), Set(), Normal)
+  val mrSatan = Guerrero(Humano, 1000, 50000, List(), Set(), Normal)
+  val androide18 = Guerrero(Androide, 1000, 50000, List(), Set(), Normal)
+  val dabura = Guerrero(Monstruo, 1000, 50000, List(), Set(), Normal)
   val goku = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
   val gokuNormal = Guerrero(Saiyajin(true, 1), 1000, 50000, List(), Set(), Normal)
-  val humanoConItemRomo = Guerrero(Humano(), 1000, 50000, List(Roma()), Set(), Normal)
-  val yajirobe = Guerrero(Humano(), 1000, 5000, List(Filosa()), Set(), Normal)
-  val ramboConMunicion = Guerrero(Humano(), 2000, 3000, List(Fuego(100)), Set(), Normal)
-  val dende = Guerrero(Namekusein(), 100, 200, List(), Set(), Normal)
-  val karin = Guerrero(Humano(), 10, 100, List(SemillaDelErmitaño()), Set(), Normal)
-  val monstruoFeo = Guerrero(Monstruo(), 1000, 10000, List(), Set(), Normal)
-  val krilin = Guerrero(Humano(), 5000, 10000, List(SieteEsferasDelDragon()), Set(), Normal)
+  val humanoConItemRomo = Guerrero(Humano, 1000, 50000, List(Roma()), Set(), Normal)
+  val yajirobe = Guerrero(Humano, 1000, 5000, List(Filosa()), Set(), Normal)
+  val ramboConMunicion = Guerrero(Humano, 2000, 3000, List(Fuego(100)), Set(), Normal)
+  val dende = Guerrero(Namekusein, 100, 200, List(), Set(), Normal)
+  val karin = Guerrero(Humano, 10, 100, List(SemillaDelErmitaño()), Set(), Normal)
+  val monstruoFeo = Guerrero(Monstruo, 1000, 10000, List(), Set(), Normal)
+  val krilin = Guerrero(Humano, 5000, 10000, List(SieteEsferasDelDragon()), Set(), Normal)
 
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
@@ -69,14 +69,14 @@ class MovimientosSpec extends FlatSpec with Matchers {
   "androide18" should "tirar manseko a humano gasta el doble" in {
     val (androide18After, mrSatanAfter) = onda(300)(androide18, mrSatan)
     assertResult((700, 400)) {
-      (androide18After.raza.bateria, mrSatanAfter.ki)
+      (androide18After.ki, mrSatanAfter.ki)
     }
   }
 
   "androide18" should "tirar manseko a monstruo gasta la mitad" in {
     val (androide18After, daburaAfter) = onda(300)(androide18, dabura)
     assertResult((700, 850)) {
-      (androide18After.raza.bateria, daburaAfter.ki)
+      (androide18After.ki, daburaAfter.ki)
     }
   }
 
@@ -109,13 +109,13 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   "androide18" should "cargarKi y no subir nada (seguir en 0) por ser un Androide" in {
 
-    assert(cargarKi(androide18, krilin)._1.ki === 0)
+    assert(cargarKi(androide18, krilin)._1.ki === 1000)
   }
 
   //Test usarItem Romo
   "mrSatan" should "no hacer nada  cuando useItem Romo ya que no lo tiene en su inventario" in {
 
-    val humanito = Guerrero(Humano(), 1, 50000, List(), Set(), Normal)
+    val humanito = Guerrero(Humano, 1, 50000, List(), Set(), Normal)
     val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((mrSatan, humanito))
 
     assert(luchadoresLuegoDeUsarItemRoma._1 === mrSatan && luchadoresLuegoDeUsarItemRoma._2 === humanito)
@@ -137,7 +137,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   "bulma" should "quedar nomal al recibir ataque con item Romo de alguien que no posee dicho item aunque tiene menos de 300 de ki" in {
 
-    val humanoSinItemRomo = Guerrero(Humano(), 1000, 50000, List(), Set(), Normal)
+    val humanoSinItemRomo = Guerrero(Humano, 1000, 50000, List(), Set(), Normal)
     val luchadoresLuegoDeUsarItemRoma = UsarItem(Roma())((humanoSinItemRomo, bulma))
 
     assert(luchadoresLuegoDeUsarItemRoma._2.estado === Normal)
@@ -162,7 +162,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //Test usarItem Fuego
   "rambo" should "no hacer nada a ninguna raza porque no tiene munición en su arma de fuego" in {
 
-    val ramboSinBalas = Guerrero(Humano(), 2000, 3000, List(Fuego(0)), Set(), Normal)
+    val ramboSinBalas = Guerrero(Humano, 2000, 3000, List(Fuego(0)), Set(), Normal)
 
     val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(0))((ramboSinBalas, humanoConItemRomo))
 
@@ -180,7 +180,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   "rambo" should "hacer 10 de danio raza Namekusein inconsciente y disminuir en 1 su municion en el arma" in {
 
-    val dendeInconsciente = Guerrero(Namekusein(), 100, 200, List(), Set(), Inconsciente)
+    val dendeInconsciente = Guerrero(Namekusein, 100, 200, List(), Set(), Inconsciente)
     val luchadoresLuegoDeUsarItemFuego = UsarItem(Fuego(100))((ramboConMunicion, dendeInconsciente))
 
     val armaFuegoDisminuyoMunicion = luchadoresLuegoDeUsarItemFuego._1.items.find { item => item === Fuego(99) }
