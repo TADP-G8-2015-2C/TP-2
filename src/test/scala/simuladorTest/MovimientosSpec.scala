@@ -202,6 +202,40 @@ class MovimientosSpec extends FlatSpec with Matchers {
     assert(muchosGolpesNinja(krilin, androide18)._1.ki === 4990)
   }
   
+  //Test de Explotar
+  "monstruoFeo" should "explotar, quedarse en 0 ki, morir y sacar al enemigo el doble del ki perdido" in {
+    val luchadoresLuegoDeExplotar = explotar(monstruoFeo, krilin)
+    
+    assert(luchadoresLuegoDeExplotar._1.ki === 0)
+    assert(luchadoresLuegoDeExplotar._1.estado === Muerto)
+    assert(luchadoresLuegoDeExplotar._2.ki === 3000)
+  }
+  
+  "androide18" should "explotar, quedarse en 0ki y morir, y sacar al enemigo el triple del ki perdido" in {
+    val luchadoresLuegoDeExplotar = explotar(androide18, krilin)
+    
+    assert(luchadoresLuegoDeExplotar._1.ki === 0)
+    assert(luchadoresLuegoDeExplotar._1.estado === Muerto)
+    assert(luchadoresLuegoDeExplotar._2.ki === 2000)
+  }
+  
+  "dende" should "quedar en 1 de ki, por ser un namekusein y recibir la exploción" in {
+    val luchadoresLuegoDeExplotar = explotar(androide18, dende)
+    
+    assert(luchadoresLuegoDeExplotar._2.ki === 1)
+  }
+  
+  "krilin" should "hacer nada al querer explotar, por no ser ni monstrou ni androide" in {
+    val luchadoresLuegoDeExplotar = explotar(krilin, dende)
+    
+    assert(luchadoresLuegoDeExplotar._1.ki === 5000)
+    assert(luchadoresLuegoDeExplotar._1.estado === Normal)
+    assert(luchadoresLuegoDeExplotar._2.ki === 100)
+  }
+  
+  
+   
+   
   //test NiUnaMenos
   "kingCold" should "kingCold se deja fajar y le cambia el estado" in {
     val (kingColdAfter, mrSatanAfter) = DejarseFajar(kingCold, mrSatan)

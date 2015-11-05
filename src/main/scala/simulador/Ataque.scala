@@ -43,7 +43,7 @@ case object muchosGolpesNinja extends Movimiento ((luchadores: Luchadores) => {
     }
 })
 
-case class Explotar() extends Movimiento ((luchadores: Luchadores) => {
+case object explotar extends Movimiento ((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.raza) match {
       case (Monstruo, Namekusein)        => (luchadores._1.morite(), luchadores._2 disminuirKiNamekusein (luchadores._1.ki * 2))
       case (Androide, Namekusein) => (luchadores._1.morite(), luchadores._2 disminuirKiNamekusein (luchadores._1.ki * 3))

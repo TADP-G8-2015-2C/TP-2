@@ -69,7 +69,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   }
   
-  def morite() = copy(estado = Muerto)
+  def morite() = copy(estado = Muerto, ki = 0)
   def quedateNiUnaMenos()={
     estado match{
       case NiUnaMenos(turnos) => copy(estado = NiUnaMenos(turnos + 1))
