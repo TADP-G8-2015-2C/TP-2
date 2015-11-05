@@ -94,6 +94,10 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def mayorVentajaKi(luchadores: Luchadores): Int = {
     luchadores._1.ki - luchadores._2.ki
   }
+  
+  //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
+  //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
+  //haciendo que nuestro método no se ejecute con la misma interfaz del que está en enunciado.
   def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)
                    (criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
     val luchadores = movElegido(this, enemigo)
@@ -115,7 +119,45 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     })._2
     
   }
+  
+  type PlanDeAtaque = List[Movimiento]
+  
+  def planDeAtaqueContra2(enemigo: Guerrero, cantidadDeRounds: Int)
+      (unCriterio: CriterioDeCombate) : PlanDeAtaque = {
+    
+    val luchadores = (this, enemigo)
+    val planDeAtaque: PlanDeAtaque = List()
 
+    val agregarMovmientoAlPlanLuegoDeEjecutar = (luchadoresYPlan: (Luchadores, PlanDeAtaque), round: Int) => {
+      val luchadoresAhora = luchadoresYPlan._1
+      val plan = luchadoresYPlan._2
+      
+      val movimientoAAgregar = luchadoresAhora._1.movimientoMasEfectivoContra(luchadoresAhora._2)(unCriterio)
+      
+      (luchadoresAhora._1.pelearUnRound(movimientoAAgregar)(luchadoresAhora._2)(), plan.+:(movimientoAAgregar))
+    }
+    
+    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, planDeAtaque)(agregarMovmientoAlPlanLuegoDeEjecutar)._2
+  }
+  
+
+  //ahora le meto Unit porque puede devolver o un Guerrero o Luchadores. Más adelante
+  //ver de hacer algo mejor...
+  //boceto muy básico, no cumple con lo pedido...
+  //investigar cómo salir de foldLeft o ver de usar find o algo así...
+  def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque) :Unit = {
+    
+    val luchadores = (this, enemigo)
+    
+    val pelearDadoMovimiento = (luchadores: Luchadores, movimiento: Movimiento) => {
+      val atacante = luchadores._1
+      val enemigo = luchadores._2
+      
+      atacante.pelearUnRound(movimiento)(enemigo)()
+    }
+    
+    unPlan.foldLeft(luchadores)(pelearDadoMovimiento)
+  }
 }
 
 trait Estado {}
