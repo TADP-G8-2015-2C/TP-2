@@ -1,6 +1,7 @@
 package simuladorTest
 
 object worksheet1 {
+
   println("Welcome to the Scala worksheet")       //> Welcome to the Scala worksheet
 	//val a: scala.collection.immutable.Set[Int] = Set(1, 3, 2)
 	val a = Set(1, 3) + 2 + 3                 //> a  : scala.collection.immutable.Set[Int] = Set(1, 3, 2)
@@ -14,5 +15,5 @@ object worksheet1 {
 	a.filter { n => n> 1 }                    //> res5: scala.collection.immutable.Set[Int] = Set(3, 2)
 	val li=List.range(1, 5)                   //> li  : List[Int] = List(1, 2, 3, 4)
 	li.:+(6)                                  //> res6: List[Int] = List(1, 2, 3, 4, 6)
-	
+
 }
