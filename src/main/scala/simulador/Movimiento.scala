@@ -65,7 +65,7 @@ object ArenaDeCell {
 
   case object ConvertirseEnSS extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1.raza) match {
-      case (Saiyajin(_, nivel, false)) => (luchadores._1.copy(raza = luchadores._1.raza.subirDeNivel(luchadores._1), kiMax = (nivel + 1) * 5 * luchadores._1.kiMax), luchadores._2)
+      case (Saiyajin(cola, nivel, false)) if luchadores._1.ki * 2 > luchadores._1.kiMax => (luchadores._1.copy(raza = Saiyajin(cola,nivel+1,false), kiMax = (nivel + 1) * 5 * luchadores._1.kiMax), luchadores._2)
       case (_)                         => luchadores
     }
   })

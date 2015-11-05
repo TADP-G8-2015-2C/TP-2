@@ -42,6 +42,28 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
+  //ConvertirseEnSS
+    "kingCold" should "no puede convertirse en ss porque no lo es" in {
+    assertResult(kingCold.raza) {
+      ConvertirseEnSS(kingCold,mrSatan)._1.raza
+    }
+  }
+  
+    "gokuNormal" should "no puede convertirse en ss no tiene el poder suficiente" in {
+    assertResult(gokuNormal.raza) {
+      ConvertirseEnSS(gokuNormal,mrSatan)._1.raza
+    }
+  }
+    "gokuNormal" should "carga ki y se convierte en ss " in {
+    assertResult(Saiyajin(true,2)) {
+      ConvertirseEnSS(gokuNormal.aumentarKi(25000),mrSatan)._1.raza
+    }
+  }
+        "gokuNormal" should "se convierte en ss y aumenta su kiMax" in {
+    assertResult(gokuNormal.kiMax * (1 + 1) * 5) {
+      ConvertirseEnSS(gokuNormal.aumentarKi(25000),mrSatan)._1.kiMax
+    }
+  }
   //dejar de ser ss
   "kingCold" should "no puede dejar de ser ss porque no lo es" in {
     assertResult(kingCold.raza) {
