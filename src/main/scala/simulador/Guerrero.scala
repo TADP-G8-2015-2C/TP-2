@@ -59,7 +59,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def dejarDeSerSS() = {
     (raza) match {
-      case (Saiyajin(cola, nivel, false)) => copy(raza = Saiyajin(cola, 0, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
+      case (Saiyajin(cola, nivel, false)) if nivel > 1 => copy(raza = Saiyajin(cola, 1, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
       case (_)                            => this
     }
   }
@@ -82,7 +82,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
 
-  def transformateEnMono = copy(kiMax = raza.aumentarKiMax(this), ki = kiMax)
+  def transformateEnMono = copy(kiMax = kiMax *3, ki = kiMax)
 
   type CriterioDeCombate = Luchadores => Int
 

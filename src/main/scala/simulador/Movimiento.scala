@@ -57,7 +57,8 @@ object ArenaDeCell {
 
   case object convertirseEnMonoGigante extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1, luchadores._1.raza) match {
-      case (guerrero, Saiyajin(true, nivel, false)) if guerrero.poseeItem(FotoDeLaLuna) => (guerrero.dejarDeSerSS.transformateEnMono, luchadores._2)
+      case (guerrero, Saiyajin(true, nivel, false)) if guerrero.poseeItem(FotoDeLaLuna) => 
+            (luchadores._1.dejarDeSerSS.transformateEnMono.copy(raza = Saiyajin(true, 1, true)), luchadores._2)
       case (_, _) => luchadores
     }
   })

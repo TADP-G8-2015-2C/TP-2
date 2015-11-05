@@ -14,7 +14,7 @@ case object Humano extends Raza
 case object Androide extends Raza 
 case object Namekusein extends Raza 
 case class Fusionado(guerreroOriginal: Guerrero) extends Raza 
-case class Saiyajin(cola: Boolean, nivel: Int = 0, monoGigante: Boolean = false) extends Raza {
+case class Saiyajin(cola: Boolean, nivel: Int = 1, monoGigante: Boolean = false) extends Raza {
 
   override def subirDeNivel(guerrero: Guerrero) = {
     if (guerrero.ki >= guerrero.kiMax) {

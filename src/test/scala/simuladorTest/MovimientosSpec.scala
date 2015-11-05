@@ -28,7 +28,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val esferas7: List[Item] = List.range(1, 8).map { n => EsferasDelDragon(n) }
   val krilin = Guerrero(Humano, 5000, 10000, esferas7, Set(), Normal)
   val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
-  val monoGigante = Guerrero(Saiyajin(true, 0, true), 5000, 10000, List(), Set(), Normal)
+  val monoGigante = Guerrero(Saiyajin(true, 1, true), 5000, 10000, List(), Set(), Normal)
   val inconsciente = Guerrero(Monstruo, 5000, 10000, List(), Set(), Inconsciente)
 
   val magiaDende = (luchadores: Luchadores) => {
@@ -49,7 +49,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
     }
   }
   "gokuSS3" should "deja de ser ss" in {
-    assertResult(Saiyajin(true, 0)) {
+    assertResult(Saiyajin(true, 1)) {
       gokuSS3.dejarDeSerSS().raza
     }
   }
@@ -84,13 +84,46 @@ class MovimientosSpec extends FlatSpec with Matchers {
       (bardockSinFotoAfter.raza)
     }
   }
-  /*
-      "gokuNormal" should "puede converstirse en Mono" in {
+
+  "gokuNormal" should "se convierte en Mono" in {
     val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
-    assertResult(Saiyajin(true,0,true)) {
+    assertResult(Saiyajin(true, 1, true)) {
       (gokuNormalAfter.raza)
     }
-  }*/
+  }
+  "gokuNormal" should "se convierte en Mono y su ki se recupera a su viejo KiMax" in {
+    val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
+    assertResult(gokuNormal.kiMax) {
+      (gokuNormalAfter.ki)
+    }
+  }
+    "gokuNormal" should "se convierte en Mono y se modifica kiMax" in {
+    val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
+    assertResult(gokuNormal.kiMax *3) {
+      (gokuNormalAfter.kiMax)
+    }
+  }
+
+  "gokuSS3" should "se convierte en Mono" in {
+    val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
+    assertResult(Saiyajin(true, 1, true)) {
+      (gokuSS3After.raza)
+    }
+  }
+  
+   "gokuSS3" should "se convierte en Mono y modifica kiMax" in {
+    val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
+    assertResult((gokuSS3.kiMax / (5 * (3 - 1)))*3) {
+      (gokuSS3After.kiMax)
+    }
+  }
+    
+   "gokuSS3" should "se convierte en Mono y modifica ki" in {
+    val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
+    assertResult((gokuSS3.kiMax / (5 * (3 - 1)))) {
+      (gokuSS3After.ki)
+    }
+  }
   //test comerse Al oponente
   //TODO
 
@@ -227,7 +260,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   }
 
   "monoGigante" should " pierde cola y se queda saiyajin petoso" in {
-    assertResult(Saiyajin(false, 0, false)) {
+    assertResult(Saiyajin(false, 1, false)) {
       UsarItem(Filosa)((yajirobe, monoGigante))._2.raza
     }
   }
