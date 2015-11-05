@@ -32,7 +32,7 @@ abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)])
 
 //case class Fisico(ataque: Movimiento) extends Ataque {}
 
-case class muchosGolpesNinja() extends Movimiento ((luchadores: Luchadores) => {
+case object muchosGolpesNinja extends Movimiento ((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.raza) match {
       case (Humano, Androide) => (luchadores._1.disminuirKi(10), luchadores._2)
       case (_, _) => if ((luchadores._1.ki > luchadores._2.ki)) {

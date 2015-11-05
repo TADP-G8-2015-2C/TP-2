@@ -185,6 +185,23 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //test comerse Al oponente
   //TODO
 
+  //Test MuchosGolpesNinja  
+  "mrSatan" should "sufrir 20 puntos de daño al ser atacado por luchador de mayor ki que el" in {
+    assert(muchosGolpesNinja(mrSatan, krilin)._1.ki === 980)
+  }
+  
+  "krilin" should "sufrir 20 puntos de daño al intercambiar golpes ninja con luchador de mayor ki" in {
+    assert(muchosGolpesNinja(gokuSS3, krilin)._2.ki === 4980)
+  }
+  
+  "gokuSS3" should "no sufre daño por ser el atacante (no humano) y pegarle a un androide, aunque sea de menor ki" in {
+    assert(muchosGolpesNinja(gokuSS3, androide18)._1.ki === 20000)
+  }
+  
+   "krilin" should "Sufre 10 de daño por ser el atacante (humano) y pegarle a un androide, aunque sea de menor ki" in {
+    assert(muchosGolpesNinja(krilin, androide18)._1.ki === 4990)
+  }
+  
   //test NiUnaMenos
   "kingCold" should "kingCold se deja fajar y le cambia el estado" in {
     val (kingColdAfter, mrSatanAfter) = DejarseFajar(kingCold, mrSatan)
