@@ -48,16 +48,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
   
-  val formaDigerirDeCell = (luchadores: Luchadores) => {
-    (luchadores._2.raza) match {
-      case Androide => luchadores._1.movimientos ++ luchadores._2.movimientos
-      case _ => luchadores._1.movimientos
-    }
-  }
-  
-  val formaDigerirDeMajinBuu = (luchadores: Luchadores) => {
-     luchadores._2.movimientos
-  }
+
   //Fusion
   "dabura" should "no se puede fusionar con gokuNormal" in {
     assertResult(dabura.raza) {

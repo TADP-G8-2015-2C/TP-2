@@ -70,6 +70,16 @@ object ArenaDeCell {
     }
   })
 
+  val formaDigerirDeCell = (luchadores: Luchadores) => {
+    (luchadores._2.raza) match {
+      case Androide => luchadores._1.movimientos ++ luchadores._2.movimientos
+      case _ => luchadores._1.movimientos
+    }
+  }
+  
+  val formaDigerirDeMajinBuu = (luchadores: Luchadores) => {
+     luchadores._2.movimientos
+  }
   /*
      *  Cuando un Saiyajin se vuelve muy poderoso se convierte en Super Saiyajin, estas transformaciones son acumulables 
      *  (eso quiere decir que cuando un SS se vuelve muy fuerte se puede convertir en SS nivel 2, luego en SS nivel 3 y así...). 
