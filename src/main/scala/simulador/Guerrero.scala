@@ -38,17 +38,16 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def removerItem(unItem: Item) = copy(items = items.filterNot { item => item == unItem }) //este metodo lo hace, el que lo llama tiene que ser consciente de que tenga el item
 
   def poseer7Esferas = {
-    List.range(1,8).forall { n => this.poseeItem(EsferasDelDragon(n)) }
+    List.range(1, 8).forall { n => this.poseeItem(EsferasDelDragon(n)) }
   }
-  
+
   def usar7Esferas: Guerrero = {
-    if (this.poseer7Esferas) List.range(1,8).foldLeft(this)((l,n) => { l.removerItem(EsferasDelDragon(n))})
+    if (this.poseer7Esferas) List.range(1, 8).foldLeft(this)((l, n) => { l.removerItem(EsferasDelDragon(n)) })
     else this
   }
-  
+
   def recuperarMaxPotencial() = copy(ki = kiMax)
 
-  
   def esbueno() = List(Saiyajin(_, _, _), Namekusein, Humano).contains(this.raza) //Ez game
   def esMalo() = List(Androide, Monstruo).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
 
@@ -60,7 +59,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def dejarDeSerSS() = {
     (raza) match {
       case (Saiyajin(cola, nivel, false)) if nivel > 1 => copy(raza = Saiyajin(cola, 1, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
-      case (_)                            => this
+      case (_)                                         => this
     }
   }
 
@@ -68,21 +67,21 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     copy(raza = Fusionado(this), ki = ki + compañero.ki, kiMax = kiMax + compañero.kiMax, movimientos = movimientos ++ compañero.movimientos)
 
   }
-  
+
   def morite() = copy(estado = Muerto, ki = 0)
-  def quedateNiUnaMenos()={
-    estado match{
+  def quedateNiUnaMenos() = {
+    estado match {
       case NiUnaMenos(turnos) => copy(estado = NiUnaMenos(turnos + 1))
-      case _ => copy(estado = NiUnaMenos())
+      case _                  => copy(estado = NiUnaMenos())
     }
   }
   def quedateInconsciente() = raza.meQuedeInconsciente(this).copy(estado = Inconsciente)
-  
-   def quedateNormal() = copy(estado = Normal)
+
+  def quedateNormal() = copy(estado = Normal)
 
   def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
 
-  def transformateEnMono = copy(kiMax = kiMax *3, ki = kiMax)
+  def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax)
 
   type CriterioDeCombate = Luchadores => Int
 
@@ -93,71 +92,68 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
       throw new RuntimeException("No tiene movimiento mas efectivo contra oponente")
     else movMasEfectivo
   }
-  def mayorVentajaKi(luchadores: Luchadores): Int = {
-    luchadores._1.ki - luchadores._2.ki
-  }
-  
+  def mayorVentajaKi(luchadores: Luchadores): Int = luchadores._1.ki - luchadores._2.ki
+  def mayorDaño(luchadores: Luchadores): Int = if (luchadores._2.ki == 0) 1 else 1 / luchadores._2.ki
+  def oponenteConMasKi(luchadores: Luchadores): Int = luchadores._2.ki
+  def perderMenorCantDeItems(luchadores: Luchadores): Int = luchadores._1.items.size
+  def noMeMato(luchadores: Luchadores): Int = if (luchadores._1.estado == Muerto) 0 else 1
+
   //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
   //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
   //haciendo que nuestro método no se ejecute con la misma interfaz del que está en enunciado.
-  def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)
-                   (criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
+  def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)(criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
     val luchadores = movElegido(this, enemigo)
     val movContraAtaque = enemigo.movimientoMasEfectivoContra(this)(criterio)
     movContraAtaque(luchadores)
   }
 
-  
-  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)
-                        (unCriterio: CriterioDeCombate) : List[Movimiento] = {
-    val luchadores = (this,enemigo)
+  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): List[Movimiento] = {
+    val luchadores = (this, enemigo)
     val plan: List[Movimiento] = List()
-    val tupla = (luchadores,plan)
-    
-    List.range(1,cantidadDeRounds + 1).foldLeft(luchadores,plan)( (tupla,pepita) =>{
-      val ((atacante,oponente),plan) = tupla
+    val tupla = (luchadores, plan)
+
+    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)((tupla, pepita) => {
+      val ((atacante, oponente), plan) = tupla
       val movIntermedio: Movimiento = atacante.movimientoMasEfectivoContra(oponente)(unCriterio)
-      (movIntermedio(atacante,oponente), plan.:+(movIntermedio))
+      (movIntermedio(atacante, oponente), plan.:+(movIntermedio))
     })._2
-    
+
   }
-  
+
   type PlanDeAtaque = List[Movimiento]
-  
-  def planDeAtaqueContra2(enemigo: Guerrero, cantidadDeRounds: Int)
-      (unCriterio: CriterioDeCombate) : PlanDeAtaque = {
-    
+
+  def planDeAtaqueContra2(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): PlanDeAtaque = {
+
     val luchadores = (this, enemigo)
     val planDeAtaque: PlanDeAtaque = List()
 
     val agregarMovmientoAlPlanLuegoDeEjecutar = (luchadoresYPlan: (Luchadores, PlanDeAtaque), round: Int) => {
       val luchadoresAhora = luchadoresYPlan._1
       val plan = luchadoresYPlan._2
-      
+
       val movimientoAAgregar = luchadoresAhora._1.movimientoMasEfectivoContra(luchadoresAhora._2)(unCriterio)
-      
+
       (luchadoresAhora._1.pelearUnRound(movimientoAAgregar)(luchadoresAhora._2)(), plan.+:(movimientoAAgregar))
     }
-    
+
     List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, planDeAtaque)(agregarMovmientoAlPlanLuegoDeEjecutar)._2
   }
-  
 
   //ahora le meto Unit porque puede devolver o un Guerrero o Luchadores. Más adelante
   //ver de hacer algo mejor...
   //boceto muy básico, no cumple con lo pedido...
   //investigar cómo salir de foldLeft o ver de usar find o algo así...
-  def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque) :Unit = {
-    
+  def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque): Unit = {
+
     val luchadores = (this, enemigo)
-    
+
     val pelearDadoMovimiento = (luchadores: Luchadores, movimiento: Movimiento) => {
       val atacante = luchadores._1
       val enemigo = luchadores._2
-      
+
       atacante.pelearUnRound(movimiento)(enemigo)()
     }
-    
+
     unPlan.foldLeft(luchadores)(pelearDadoMovimiento)
   }
 }
