@@ -8,6 +8,7 @@ import org.scalatest.Matchers
 import scala.collection.immutable.List
 import scala.collection.immutable.Set
 import scala.collection.GenTraversableOnce
+import simulador.TuplasUtils._
 
 class MovimientosSpec extends FlatSpec with Matchers {
 
@@ -307,6 +308,19 @@ class MovimientosSpec extends FlatSpec with Matchers {
     }
   }
 
+  "goku" should "intenta lanzar genkidama pero antes carga ki y deja de estar en NiUnaMenos" in {
+    val (gokuAfter, mrSatanAfter) = genkidama(cargarKi(DejarseFajar(DejarseFajar(gokuNormal, mrSatan))))
+    assertResult((cargarKi(gokuNormal, mrSatan)._1.ki, mrSatan.ki, Normal)) {
+      (gokuAfter.ki, mrSatanAfter.ki, gokuAfter.estado)
+    }
+  }  
+    "goku" should "intenta lanzar genkidama pero antes queda inconsciente" in {
+    val (gokuAfter, mrSatanAfter) = genkidama(DejarseFajar(gokuNormal, mrSatan).onFst ( _ quedateInconsciente ))
+    assertResult((gokuNormal.ki, mrSatan.ki, gokuNormal.quedateInconsciente().estado)) {
+      (gokuAfter.ki, mrSatanAfter.ki, gokuAfter.estado)
+    }
+  }  
+  
   //Test ondas
   "bulma" should "tirar manseko sin hacer nada porque no tiene kiSufieciente" in {
     val masenkoAfter = onda(105)(bulma, mrSatan)
