@@ -30,7 +30,10 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
   val monoGigante = Guerrero(Saiyajin(true, 1, true), 5000, 10000, List(), Set(), Normal)
   val inconsciente = Guerrero(Monstruo, 5000, 10000, List(), Set(), Inconsciente)
-
+  val cell = Guerrero(Monstruo, 10000, 50000, List(), Set(explotar), Normal)
+  val majinBuu = Guerrero(Monstruo, 20000, 70000, List(), Set(onda(100)), Normal)
+  val maestroRoshi = Guerrero(Humano, 1000, 2000, List(), Set(onda(1000), DejarseFajar), Normal)
+  
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
   }
@@ -38,9 +41,22 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val magiaLoca = (luchadores: Luchadores) => {
     (luchadores._1.quedateInconsciente(), luchadores._2.removerItem(SemillaDelErmitaño))
   }
+  
+  val androide17 = Guerrero(Androide, 200, 500, List(), Set(explotar, DejarseFajar, Magia(magiaLoca)), Normal)
 
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
+  }
+  
+  val formaDigerirDeCell = (luchadores: Luchadores) => {
+    (luchadores._2.raza) match {
+      case Androide => luchadores._1.movimientos ++ luchadores._2.movimientos
+      case _ => luchadores._1.movimientos
+    }
+  }
+  
+  val formaDigerirDeMajinBuu = (luchadores: Luchadores) => {
+     luchadores._2.movimientos
   }
   //Fusion
   "dabura" should "no se puede fusionar con gokuNormal" in {
@@ -182,8 +198,43 @@ class MovimientosSpec extends FlatSpec with Matchers {
       (gokuSS3After.ki)
     }
   }
-  //test comerse Al oponente
-  //TODO
+  
+  //Test comerse Al oponente
+	"cell" should "comerse a enemigo(androide) y quedarse con sus mov. más los del enemigo, y el enemigo morir" in {
+    val luchadoresLuegoDeComer = ComerseAOtro(formaDigerirDeCell)(cell, androide17)
+    
+    assert(luchadoresLuegoDeComer._1.movimientos.contains(explotar))
+    assert(luchadoresLuegoDeComer._1.movimientos.contains(DejarseFajar))
+    assert(luchadoresLuegoDeComer._1.movimientos.contains(Magia(magiaLoca)))
+    assert(luchadoresLuegoDeComer._1.movimientos.diff(Set(explotar, DejarseFajar, Magia(magiaLoca))) === Set())
+    assert(luchadoresLuegoDeComer._2.estado === Muerto)
+  }
+  
+  "cell" should "comerse a enemigo (NO androide) y solo matarlo, sin aprender nada" in {
+    
+    assert(cell.movimientos.contains(explotar))
+    
+    val luchadoresLuegoDeComer = ComerseAOtro(formaDigerirDeCell)(cell, maestroRoshi)
+    
+    assert(luchadoresLuegoDeComer._1.movimientos.diff(Set(explotar)) === Set())
+    assert(luchadoresLuegoDeComer._2.estado === Muerto)
+  }
+  
+  "mainBuu" should "comerse a enemigo (cualquiera) y quedarse con sus mov. y olvidar lo anterior" in {
+     
+     assert(majinBuu.movimientos.contains(onda(100)))
+    
+     val luchadoresLuegoDeComer = ComerseAOtro(formaDigerirDeMajinBuu)(majinBuu, maestroRoshi)
+     
+     assert(luchadoresLuegoDeComer._1.movimientos.diff(Set(onda(1000), DejarseFajar)) === Set())
+     assert(luchadoresLuegoDeComer._2.estado === Muerto)
+  }
+  
+  "krilin" should "no hacer nada al querer comer a otro, ya que solo los monstruos pueden" in {
+    val luchadoresLuegoDeComer = ComerseAOtro(formaDigerirDeCell)(krilin, maestroRoshi)
+    
+    assert(krilin === luchadoresLuegoDeComer._1 && maestroRoshi === luchadoresLuegoDeComer._2)
+  }
 
   //Test MuchosGolpesNinja  
   "mrSatan" should "sufrir 20 puntos de daño al ser atacado por luchador de mayor ki que el" in {
@@ -232,8 +283,6 @@ class MovimientosSpec extends FlatSpec with Matchers {
     assert(luchadoresLuegoDeExplotar._1.estado === Normal)
     assert(luchadoresLuegoDeExplotar._2.ki === 100)
   }
-  
-  
    
    
   //test NiUnaMenos
