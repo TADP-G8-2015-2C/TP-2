@@ -42,26 +42,62 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
-  //ConvertirseEnSS
-    "kingCold" should "no puede convertirse en ss porque no lo es" in {
-    assertResult(kingCold.raza) {
-      ConvertirseEnSS(kingCold,mrSatan)._1.raza
+  //Fusion
+  "dabura" should "no se puede fusionar con gokuNormal" in {
+    assertResult(dabura.raza) {
+      (Fusion(gokuNormal)(dabura, mrSatan))._1.raza // Magia(magiaDende)(dende, mrSatan)
     }
   }
-  
-    "gokuNormal" should "no puede convertirse en ss no tiene el poder suficiente" in {
+  "gokuNormal" should "no se puede fusionar con dabura" in {
     assertResult(gokuNormal.raza) {
-      ConvertirseEnSS(gokuNormal,mrSatan)._1.raza
+      (Fusion(dabura)(gokuNormal, mrSatan))._1.raza
     }
   }
-    "gokuNormal" should "carga ki y se convierte en ss " in {
-    assertResult(Saiyajin(true,2)) {
-      ConvertirseEnSS(gokuNormal.aumentarKi(25000),mrSatan)._1.raza
+  "dabura" should "no se puede fusionar con androide18" in {
+    assertResult(dabura.raza) {
+      (Fusion(androide18)(dabura, gokuNormal))._1.raza
     }
   }
-        "gokuNormal" should "se convierte en ss y aumenta su kiMax" in {
+  "bulma" should "se fusiona con dende y cambia de especie" in {
+    assertResult(Fusionado(bulma)) {
+      (Fusion(dende)(bulma, androide18))._1.raza
+    }
+  }
+  "bulma" should "se fusiona con dende y combina movimientos" in {
+    assertResult(bulma.movimientos ++ dende.movimientos) {
+      (Fusion(dende)(bulma, androide18))._1.movimientos
+    }
+  }
+  "bulma" should "se fusiona con dende y combina ambos ki" in {
+    assertResult(bulma.ki + dende.ki) {
+      (Fusion(dende)(bulma, androide18))._1.ki
+    }
+  }
+  "bulma" should "se fusiona con dende y combina ambos kiMax" in {
+    assertResult(bulma.kiMax + dende.kiMax) {
+      (Fusion(dende)(bulma, androide18))._1.kiMax
+    }
+  }
+  //ConvertirseEnSS
+  "kingCold" should "no puede convertirse en ss porque no lo es" in {
+    assertResult(kingCold.raza) {
+      ConvertirseEnSS(kingCold, mrSatan)._1.raza
+    }
+  }
+
+  "gokuNormal" should "no puede convertirse en ss no tiene el poder suficiente" in {
+    assertResult(gokuNormal.raza) {
+      ConvertirseEnSS(gokuNormal, mrSatan)._1.raza
+    }
+  }
+  "gokuNormal" should "carga ki y se convierte en ss " in {
+    assertResult(Saiyajin(true, 2)) {
+      ConvertirseEnSS(gokuNormal.aumentarKi(25000), mrSatan)._1.raza
+    }
+  }
+  "gokuNormal" should "se convierte en ss y aumenta su kiMax" in {
     assertResult(gokuNormal.kiMax * (1 + 1) * 5) {
-      ConvertirseEnSS(gokuNormal.aumentarKi(25000),mrSatan)._1.kiMax
+      ConvertirseEnSS(gokuNormal.aumentarKi(25000), mrSatan)._1.kiMax
     }
   }
   //dejar de ser ss
@@ -119,9 +155,9 @@ class MovimientosSpec extends FlatSpec with Matchers {
       (gokuNormalAfter.ki)
     }
   }
-    "gokuNormal" should "se convierte en Mono y se modifica kiMax" in {
+  "gokuNormal" should "se convierte en Mono y se modifica kiMax" in {
     val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
-    assertResult(gokuNormal.kiMax *3) {
+    assertResult(gokuNormal.kiMax * 3) {
       (gokuNormalAfter.kiMax)
     }
   }
@@ -132,15 +168,15 @@ class MovimientosSpec extends FlatSpec with Matchers {
       (gokuSS3After.raza)
     }
   }
-  
-   "gokuSS3" should "se convierte en Mono y modifica kiMax" in {
+
+  "gokuSS3" should "se convierte en Mono y modifica kiMax" in {
     val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
-    assertResult((gokuSS3.kiMax / (5 * (3 - 1)))*3) {
+    assertResult((gokuSS3.kiMax / (5 * (3 - 1))) * 3) {
       (gokuSS3After.kiMax)
     }
   }
-    
-   "gokuSS3" should "se convierte en Mono y modifica ki" in {
+
+  "gokuSS3" should "se convierte en Mono y modifica ki" in {
     val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
     assertResult((gokuSS3.kiMax / (5 * (3 - 1)))) {
       (gokuSS3After.ki)

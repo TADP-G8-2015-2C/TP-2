@@ -32,8 +32,8 @@ object ArenaDeCell {
   })
 
   case class Fusion(compañero: Guerrero) extends Movimiento((luchadores: Luchadores) => {
-    (luchadores._1, luchadores._2) match {
-      case (luchador, compañero) if luchador.esbueno() && compañero.esbueno() => (luchador.fusionateCon(compañero), luchadores._2)
+    (luchadores._1) match {
+      case (luchador) if luchador.esbueno() && compañero.esbueno() => (luchador.fusionateCon(compañero), luchadores._2)
       case _ => luchadores
     }
   })
