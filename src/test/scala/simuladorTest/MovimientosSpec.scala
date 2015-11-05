@@ -15,8 +15,10 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val mrSatan = Guerrero(Humano, 1000, 50000, List(), Set(), Normal)
   val androide18 = Guerrero(Androide, 1000, 50000, List(), Set(), Normal)
   val dabura = Guerrero(Monstruo, 1000, 50000, List(), Set(), Normal)
-  val gokuSS3 = Guerrero(Saiyajin(true, 3), 20000, 50000, List(), Set(), Normal)
-  val gokuNormal = Guerrero(Saiyajin(true, 1), 1000, 50000, List(), Set(), Normal)
+  val gokuSS3 = Guerrero(Saiyajin(true, 3), 20000, 50000, List(FotoDeLaLuna), Set(), Normal)
+  val gokuNormal = Guerrero(Saiyajin(true, 1), 1000, 50000, List(FotoDeLaLuna), Set(), Normal)
+  val gohanSinCola = Guerrero(Saiyajin(false, 1), 1000, 50000, List(FotoDeLaLuna), Set(), Normal)
+  val bardockSinFoto = Guerrero(Saiyajin(true, 1), 1000, 50000, List(), Set(), Normal)
   val humanoConItemRomo = Guerrero(Humano, 1000, 50000, List(Roma), Set(), Normal)
   val yajirobe = Guerrero(Humano, 1000, 5000, List(Filosa), Set(), Normal)
   val ramboConMunicion = Guerrero(Humano, 2000, 3000, List(Fuego(100)), Set(), Normal)
@@ -26,7 +28,8 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val esferas7: List[Item] = List.range(1, 8).map { n => EsferasDelDragon(n) }
   val krilin = Guerrero(Humano, 5000, 10000, esferas7, Set(), Normal)
   val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
-  val monoGigante = Guerrero(Saiyajin(false, 0, false), 5000, 10000, List(), Set(), Normal)
+  val monoGigante = Guerrero(Saiyajin(true, 0, true), 5000, 10000, List(), Set(), Normal)
+  val inconsciente = Guerrero(Monstruo, 5000, 10000, List(), Set(), Inconsciente)
 
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
@@ -39,6 +42,57 @@ class MovimientosSpec extends FlatSpec with Matchers {
   val superMagia = (luchadores: Luchadores) => {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
+  //dejar de ser ss
+  "kingCold" should "no puede dejar de ser ss porque no lo es" in {
+    assertResult(kingCold.raza) {
+      kingCold.dejarDeSerSS().raza
+    }
+  }
+  "gokuSS3" should "deja de ser ss" in {
+    assertResult(Saiyajin(true, 0)) {
+      gokuSS3.dejarDeSerSS().raza
+    }
+  }
+  "gokuSS3" should "deja de ser ss y se le modifica bien su ki" in {
+    assertResult(5000) {
+      gokuSS3.dejarDeSerSS().ki
+    }
+  }
+  "gokuSS3" should "deja de ser ss y se le modifica bien su kiMax" in {
+    assertResult(5000) {
+      gokuSS3.dejarDeSerSS().kiMax
+    }
+  }
+  //Convertirse en Mono
+  "kingCold" should "no puede converstirse en Mono por no ser Saiyajin" in {
+    val (kingColdAfter, mrSatanAfter) = convertirseEnMonoGigante(kingCold, mrSatan)
+    assertResult(Monstruo) {
+      (kingColdAfter.raza)
+    }
+  }
+
+  "gohanSinCola" should "no puede converstirse en Mono por no tener cola" in {
+    val (gohanSinColaAfter, mrSatanAfter) = convertirseEnMonoGigante(gohanSinCola, mrSatan)
+    assertResult(gohanSinCola.raza) {
+      (gohanSinColaAfter.raza)
+    }
+  }
+
+  "bardockSinFoto" should "no puede converstirse en Mono por no tener foto" in {
+    val (bardockSinFotoAfter, mrSatanAfter) = convertirseEnMonoGigante(bardockSinFoto, mrSatan)
+    assertResult(bardockSinFoto.raza) {
+      (bardockSinFotoAfter.raza)
+    }
+  }
+  /*
+      "gokuNormal" should "puede converstirse en Mono" in {
+    val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
+    assertResult(Saiyajin(true,0,true)) {
+      (gokuNormalAfter.raza)
+    }
+  }*/
+  //test comerse Al oponente
+  //TODO
 
   //test NiUnaMenos
   "kingCold" should "kingCold se deja fajar y le cambia el estado" in {
@@ -228,6 +282,12 @@ class MovimientosSpec extends FlatSpec with Matchers {
     val luchadoresLuegoDeUsarItemSemilla = UsarItem(SemillaDelErmitaño)((karin, gokuSS3))
 
     assert(luchadoresLuegoDeUsarItemSemilla._1.ki === luchadoresLuegoDeUsarItemSemilla._1.kiMax)
+  }
+
+  "inconsciente" should "recuperarse a normal" in {
+    assertResult(Normal) {
+      UsarItem(SemillaDelErmitaño)((inconsciente, gokuSS3))._1.estado
+    }
   }
 
   //Test Magia
