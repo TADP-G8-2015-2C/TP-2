@@ -34,6 +34,11 @@ object SetUp {
   val majinBuu = Guerrero(Monstruo, 20000, 70000, List(), Set(onda(100)), Normal)
   val maestroRoshi = Guerrero(Humano, 1000, 2000, List(), Set(onda(1000), DejarseFajar), Normal)
   
+  val kamehameha: onda = onda(500)
+  val gokuMovimientos: Set[Movimiento] =  Set(muchosGolpesNinja, kamehameha, genkidama,Fusion(krilin), DejarseFajar, cargarKi, convertirseEnMonoGigante, ConvertirseEnSS)
+  val goku :Guerrero = Guerrero(Saiyajin(true, 1), 1000, 50000, List(FotoDeLaLuna,SemillaDelErmitaño), gokuMovimientos, Normal)
+  val vegeta :Guerrero = goku.copy(movimientos = gokuMovimientos - (Fusion(krilin),kamehameha))
+  
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
   }

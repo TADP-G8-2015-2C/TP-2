@@ -5,6 +5,7 @@ import scala.collection.immutable.Set
 import scala.collection.GenTraversableOnce
 import simulador.ArenaDeCell.Movimiento
 import simulador.ArenaDeCell.Luchadores
+import simulador.ArenaDeCell._
 
 case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado) {
 
@@ -83,7 +84,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax)
 
-  type CriterioDeCombate = Luchadores => Int
+  
 
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Movimiento = {
     val luchadores = (this, enemigo)
@@ -92,11 +93,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
       throw new RuntimeException("No tiene movimiento mas efectivo contra oponente")
     else movMasEfectivo
   }
-  def mayorVentajaKi(luchadores: Luchadores): Int = luchadores._1.ki - luchadores._2.ki
-  def mayorDaño(luchadores: Luchadores): Int = if (luchadores._2.ki == 0) 1 else 1 / luchadores._2.ki
-  def oponenteConMasKi(luchadores: Luchadores): Int = luchadores._2.ki
-  def perderMenorCantDeItems(luchadores: Luchadores): Int = luchadores._1.items.size
-  def noMeMato(luchadores: Luchadores): Int = if (luchadores._1.estado == Muerto) 0 else 1
+
 
   //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
   //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
@@ -158,7 +155,9 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 }
 
-trait Estado {}
+
+  
+trait Estado
 
 case object Inconsciente extends Estado
 case object Muerto extends Estado
