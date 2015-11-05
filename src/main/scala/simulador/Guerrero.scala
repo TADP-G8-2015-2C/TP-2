@@ -87,10 +87,11 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   
 
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Movimiento = {
+    if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
     val luchadores = (this, enemigo)
     val movMasEfectivo = movimientos.maxBy { mov => criterio(mov(luchadores)) }
     if (criterio(movMasEfectivo(luchadores)) <= 0)
-      throw new RuntimeException("No tiene movimiento mas efectivo contra oponente")
+      throw new NoTieneMovimientoMasEfectivoException("No tiene movimiento mas efectivo contra oponente")
     else movMasEfectivo
   }
 

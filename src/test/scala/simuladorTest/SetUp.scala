@@ -38,6 +38,8 @@ object SetUp {
   val gokuMovimientos: Set[Movimiento] =  Set(muchosGolpesNinja, kamehameha, genkidama,Fusion(krilin), DejarseFajar, cargarKi, convertirseEnMonoGigante, ConvertirseEnSS)
   val goku :Guerrero = Guerrero(Saiyajin(true, 1), 1000, 50000, List(FotoDeLaLuna,SemillaDelErmitaño), gokuMovimientos, Normal)
   val vegeta :Guerrero = goku.copy(movimientos = gokuMovimientos - (Fusion(krilin),kamehameha))
+  val chiChi = Guerrero(Humano, 1, 25, List(), Set(muchosGolpesNinja), Normal)
+  val kami = Guerrero(Humano, 1, 25, List(), Set(), Normal)
   
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))
