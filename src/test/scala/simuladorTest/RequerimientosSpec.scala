@@ -92,11 +92,6 @@ class RequerimientosSpec extends FlatSpec with Matchers {
   }
   //test de plan de ataque
  
-  //yamcha usa el criterio de mayor ventaja de ki tiene el filosa que gasta 200(2000,1800)
-  //entonces eso le da mayor ventaja de ki que comer semilla del hermitaño
-  //después cell oju contrataca con onda(300) que es el único ataque que tiene y le gasta 600 a yamcha(1400,1800)
-  //entonces en el segundo round yamcha come semilla del hermitaño(2000,1800)
-  //==> (1400,1800)
   "yamcha" should "planificar ataque contra cell jr" in {
     assertResult(List(UsarItem(Filosa),UsarItem(SemillaDelErmitaño))) {
       yamcha.planDeAtaqueContra(cellJr, 2)(gastaMenosKi)
