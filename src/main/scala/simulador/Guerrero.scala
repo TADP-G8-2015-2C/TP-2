@@ -84,8 +84,6 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax)
 
-  
-
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Movimiento = {
     if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
     val luchadores = (this, enemigo)
@@ -94,7 +92,6 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
       throw new NoTieneMovimientoMasEfectivoException("No tiene movimiento mas efectivo contra oponente")
     else movMasEfectivo
   }
-
 
   //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
   //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
@@ -142,23 +139,23 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   //ver de hacer algo mejor...
   //boceto muy básico, no cumple con lo pedido...
   //investigar cómo salir de foldLeft o ver de usar find o algo así...
-  def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque): Unit = {
+  def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque): ResultadoDePelea = {
 
-    val luchadores = (this, enemigo)
-
-    val pelearDadoMovimiento = (luchadores: Luchadores, movimiento: Movimiento) => {
-      val atacante = luchadores._1
-      val enemigo = luchadores._2
-
-      atacante.pelearUnRound(movimiento)(enemigo)()
+    def pelearDadoMovimiento (resultado: ResultadoDePelea, movimiento: Movimiento) :ResultadoDePelea = {
+      resultado match {
+        case SiguenPeleando(luchadores) => dameGanador(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
+        case Ganador(luchadores) => Ganador(luchadores)
+      }
     }
-
-    unPlan.foldLeft(luchadores)(pelearDadoMovimiento)
+    val semilla: ResultadoDePelea = SiguenPeleando(this,enemigo)
+    unPlan.foldLeft(semilla)(pelearDadoMovimiento)
   }
 }
 
+trait ResultadoDePelea
+case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea
+case class Ganador(luchadores: Luchadores) extends ResultadoDePelea
 
-  
 trait Estado
 
 case object Inconsciente extends Estado

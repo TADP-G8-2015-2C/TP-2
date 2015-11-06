@@ -105,5 +105,22 @@ object ArenaDeCell {
   case object noMeMato extends CriterioDeCombate((luchadores: Luchadores) => {
     if (luchadores._1.estado == Muerto) 0 else 1
   })
+  
+  case object hayGanador {
+    def apply(luchadores: Luchadores): Boolean = {
+      List(luchadores._1.estado,luchadores._2.estado).contains(Muerto)
+    }
+  }
 
+    case object dameGanador {
+    def apply(luchadores: Luchadores): ResultadoDePelea = {
+      val(atacante,enemigo) = luchadores
+      (atacante.estado,enemigo.estado) match {
+        case (Muerto,_) => Ganador(atacante,enemigo)
+        case (_,Muerto) => Ganador(enemigo,atacante)
+        case _ => SiguenPeleando(atacante,enemigo)
+      }
+    }
+  }
+  
 }
