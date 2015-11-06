@@ -89,6 +89,7 @@ object ArenaDeCell {
     }
   }
 
+  case object gastaMenosKi extends CriterioDeCombate((luchadores: Luchadores) => { luchadores._1.ki })
   case object mayorVentajaKi extends CriterioDeCombate((luchadores: Luchadores) => {
     luchadores._1.ki - luchadores._2.ki
   })

@@ -42,6 +42,8 @@ object SetUp {
   val kami = Guerrero(Humano, 1, 25, List(), Set(), Normal)
   val piccolo = Guerrero(Namekusein, 1500, 3000, List(), gokuMovimientos, Normal)
   val freezer = Guerrero(Monstruo, 2000, 3000, List(), Set(kamehameha, onda(100)), Normal)
+  val yamcha = Guerrero(Humano, 2000, 2000, List(Filosa,SemillaDelErmitaño), Set(UsarItem(Filosa),UsarItem(SemillaDelErmitaño)), Normal)
+  val cellJr = Guerrero(Monstruo, 2000, 2000, List(), Set(onda(300)), Normal)
   
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))

@@ -12,7 +12,6 @@ import simulador.TuplasUtils._
 import simuladorTest.SetUp._
 
 class MovimientosSpec extends FlatSpec with Matchers {
-
  
   //Fusion
   "dabura" should "no se puede fusionar con gokuNormal" in {

@@ -56,41 +56,51 @@ class RequerimientosSpec extends FlatSpec with Matchers {
     }
     assert(thrown.getMessage === "Antes que aprenda algun movimiento")
   }
-  
-    "chiChi" should " lanza excepcion al no tener movimiento mas efectivo con ese criterio" in {
+
+  "chiChi" should " lanza excepcion al no tener movimiento mas efectivo con ese criterio" in {
     val thrown = intercept[NoTieneMovimientoMasEfectivoException] {
       chiChi.movimientoMasEfectivoContra(goku)(mayorVentajaKi)
     }
     assert(thrown.getMessage === "No tiene movimiento mas efectivo contra oponente")
   }
-    
-    
-    //Test del pelearUnRound
-    "piccolo" should "atacar con movimiento que posee, y recibir el mejor ataque posible por defecto de parte del enemigo" in {
-      
-      val luchadoresDespuesDeRound = piccolo.pelearUnRound(kamehameha)(freezer)()
-      
-      //Explicación del test para entenderlo al hacerlo. Si quieren después lo borro
-      //freezer tiene kamehameha (onda(500)), onda(100). 
-      //Debería usar el kamehameha porque lo deja mejor en ki con respecto a rival(condicion por defecto)
-      //Secuencia del ataque: piccolo le saca (500 / 2) con su onda(500) (al atacar a monstruo divide por 2) 
-      //y por eso pierde 500, freezer contrataca con lo mismo (kamehameha) y le saca 1000 a piccolo, perdiendo 500. 
-      //Por esto, piccolo termina muerto (empezó con 1500) y freezer empezó con 2000 y termina con 1250.
-      
-      assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
-      assert(luchadoresDespuesDeRound._2.ki === 1250)
+
+  //Test del pelearUnRound
+  "piccolo" should "atacar con movimiento que posee, y recibir el mejor ataque posible por defecto de parte del enemigo" in {
+
+    val luchadoresDespuesDeRound = piccolo.pelearUnRound(kamehameha)(freezer)()
+
+    //Explicación del test para entenderlo al hacerlo. Si quieren después lo borro
+    //freezer tiene kamehameha (onda(500)), onda(100). 
+    //Debería usar el kamehameha porque lo deja mejor en ki con respecto a rival(condicion por defecto)
+    //Secuencia del ataque: piccolo le saca (500 / 2) con su onda(500) (al atacar a monstruo divide por 2) 
+    //y por eso pierde 500, freezer contrataca con lo mismo (kamehameha) y le saca 1000 a piccolo, perdiendo 500. 
+    //Por esto, piccolo termina muerto (empezó con 1500) y freezer empezó con 2000 y termina con 1250.
+
+    assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
+    assert(luchadoresDespuesDeRound._2.ki === 1250)
+  }
+  "freezer" should "ataca con movimiento y enemigo muere, entonces el enemigo con contraataca" in {
+    val luchadoresDespuesDeRound = freezer.pelearUnRound(kamehameha)(rojelioCargaKi)()
+
+    //Freezer hace kamehameha y deja a rojelio en 1 de ki (tiene 1001). Rojelio (un Namekusein) tiene entre su movimientos a
+    //Magia(superMagia) la cual recupera todo su ki hasta el máximo y disminuye 100000 de ki al oponente
+    //matando así a freezer.
+
+    assert(luchadoresDespuesDeRound._2.ki === 1500)
+    assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
+
+  }
+  //test de plan de ataque
+ 
+  //yamcha usa el criterio de mayor ventaja de ki tiene el filosa que gasta 200(2000,1800)
+  //entonces eso le da mayor ventaja de ki que comer semilla del hermitaño
+  //después cell oju contrataca con onda(300) que es el único ataque que tiene y le gasta 600 a yamcha(1400,1800)
+  //entonces en el segundo round yamcha come semilla del hermitaño(2000,1800)
+  //==> (1400,1800)
+  "yamcha" should "planificar ataque contra cell jr" in {
+    assertResult(List(UsarItem(Filosa),UsarItem(SemillaDelErmitaño))) {
+      yamcha.planDeAtaqueContra(cellJr, 2)(gastaMenosKi)
     }
-    "freezer" should "ataca con movimiento y enemigo muere, entonces el enemigo con contraataca" in {
-      val luchadoresDespuesDeRound = freezer.pelearUnRound(kamehameha)(rojelioCargaKi)()
-      
-      //Freezer hace kamehameha y deja a rojelio en 1 de ki (tiene 1001). Rojelio (un Namekusein) tiene entre su movimientos a
-      //Magia(superMagia) la cual recupera todo su ki hasta el máximo y disminuye 100000 de ki al oponente
-      //matando así a freezer.
-      
-      assert(luchadoresDespuesDeRound._2.ki === 1500)
-      assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
-      
-    }
-    //test de plan de ataque
-    
+  }
+
 }
