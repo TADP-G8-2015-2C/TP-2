@@ -91,6 +91,6 @@ class RequerimientosSpec extends FlatSpec with Matchers {
       assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
       
     }
-    
+    //test de plan de ataque
     
 }
