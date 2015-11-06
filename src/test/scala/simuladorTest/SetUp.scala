@@ -57,5 +57,5 @@ object SetUp {
     (luchadores._1.recuperarMaxPotencial(), luchadores._2.disminuirKi(100000))
   }
   
-
+  val rojelioCargaKi = Guerrero(Namekusein, 1001, 1500, List(), Set(Magia(superMagia), DejarseFajar, onda(400)), Normal)
 }

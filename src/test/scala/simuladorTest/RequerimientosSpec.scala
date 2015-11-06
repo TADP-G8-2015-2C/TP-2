@@ -80,5 +80,17 @@ class RequerimientosSpec extends FlatSpec with Matchers {
       assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
       assert(luchadoresDespuesDeRound._2.ki === 1250)
     }
+    "freezer" should "ataca con movimiento y enemigo muere, entonces el enemigo con contraataca" in {
+      val luchadoresDespuesDeRound = freezer.pelearUnRound(kamehameha)(rojelioCargaKi)()
+      
+      //Freezer hace kamehameha y deja a rojelio en 1 de ki (tiene 1001). Rojelio (un Namekusein) tiene entre su movimientos a
+      //Magia(superMagia) la cual recupera todo su ki hasta el máximo y disminuye 100000 de ki al oponente
+      //matando así a freezer.
+      
+      assert(luchadoresDespuesDeRound._2.ki === 1500)
+      assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
+      
+    }
+    
     
 }
