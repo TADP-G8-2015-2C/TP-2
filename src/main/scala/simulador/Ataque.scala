@@ -55,9 +55,9 @@ case object explotar extends Movimiento ((luchadores: Luchadores) => {
 
 case class onda(kiNecesario: Int) extends Movimiento ((luchadores: Luchadores) => {
     (luchadores._1.raza, luchadores._2.raza) match {   
-      case (_, Monstruo) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario / 2) )
-      case (_, Androide) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 aumentarKi (kiNecesario) )
-      case (_, _) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2 disminuirKi (kiNecesario * 2) )
+      case (_, Monstruo) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.disminuirKi(kiNecesario / 2) )
+      case (_, Androide) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.aumentarKi(kiNecesario) )
+      case (_, _) if luchadores._1.ki >= kiNecesario => (luchadores._1.disminuirKi(kiNecesario), luchadores._2.disminuirKi(kiNecesario * 2) )
       case (_, _) => luchadores
     }
  //ES MUY FEO ESTO MUCHISIMA LOGICA REPETIDA MATAN CONEJITOS 

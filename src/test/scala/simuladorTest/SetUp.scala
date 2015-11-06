@@ -40,6 +40,8 @@ object SetUp {
   val vegeta :Guerrero = goku.copy(movimientos = gokuMovimientos - (Fusion(krilin),kamehameha))
   val chiChi = Guerrero(Humano, 1, 25, List(), Set(muchosGolpesNinja), Normal)
   val kami = Guerrero(Humano, 1, 25, List(), Set(), Normal)
+  val piccolo = Guerrero(Namekusein, 1500, 3000, List(), gokuMovimientos, Normal)
+  val freezer = Guerrero(Monstruo, 2000, 3000, List(), Set(kamehameha, onda(100)), Normal)
   
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))

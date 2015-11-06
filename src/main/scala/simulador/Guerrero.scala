@@ -18,7 +18,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 
   def disminuirKi(cuanto: Int) = {
-    if (ki - cuanto < 0) {
+    if (ki - cuanto <= 0) {
       copy(ki = 0, estado = Muerto)
     } else {
       copy(ki = ki - cuanto)
@@ -101,8 +101,9 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   //haciendo que nuestro método no se ejecute con la misma interfaz del que está en enunciado.
   def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)(criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
     val luchadores = movElegido(this, enemigo)
-    val movContraAtaque = enemigo.movimientoMasEfectivoContra(this)(criterio)
-    movContraAtaque(luchadores)
+    val movContraAtaque = luchadores._2.movimientoMasEfectivoContra(luchadores._1)(criterio)
+    val luchadoresFinal = movContraAtaque(luchadores._2, luchadores._1)
+    (luchadoresFinal._2, luchadoresFinal._1)
   }
 
   def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): List[Movimiento] = {

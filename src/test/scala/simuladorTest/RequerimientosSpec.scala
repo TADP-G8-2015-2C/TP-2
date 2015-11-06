@@ -63,4 +63,22 @@ class RequerimientosSpec extends FlatSpec with Matchers {
     }
     assert(thrown.getMessage === "No tiene movimiento mas efectivo contra oponente")
   }
+    
+    
+    //Test del pelearUnRound
+    "piccolo" should "atacar con movimiento que posee, y recibir el mejor ataque posible por defecto de parte del enemigo" in {
+      
+      val luchadoresDespuesDeRound = piccolo.pelearUnRound(kamehameha)(freezer)()
+      
+      //Explicación del test para entenderlo al hacerlo. Si quieren después lo borro
+      //freezer tiene kamehameha (onda(500)), onda(100). 
+      //Debería usar el kamehameha porque lo deja mejor en ki con respecto a rival(condicion por defecto)
+      //Secuencia del ataque: piccolo le saca (500 / 2) con su onda(500) (al atacar a monstruo divide por 2) 
+      //y por eso pierde 500, freezer contrataca con lo mismo (kamehameha) y le saca 1000 a piccolo, perdiendo 500. 
+      //Por esto, piccolo termina muerto (empezó con 1500) y freezer empezó con 2000 y termina con 1250.
+      
+      assert(luchadoresDespuesDeRound._1.ki === 0 && luchadoresDespuesDeRound._1.estado === Muerto)
+      assert(luchadoresDespuesDeRound._2.ki === 1250)
+    }
+    
 }
