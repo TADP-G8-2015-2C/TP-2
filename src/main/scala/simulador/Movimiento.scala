@@ -111,13 +111,17 @@ object ArenaDeCell {
       List(luchadores._1.estado,luchadores._2.estado).contains(Muerto)
     }
   }
+  
+  case object noHaceNada extends Movimiento((luchadores: Luchadores) => {
+    luchadores
+  })
 
     case object dameGanador {
     def apply(luchadores: Luchadores): ResultadoDePelea = {
       val(atacante,enemigo) = luchadores
       (atacante.estado,enemigo.estado) match {
-        case (Muerto,_) => Ganador(atacante,enemigo)
-        case (_,Muerto) => Ganador(enemigo,atacante)
+        case (Muerto,_) => Ganador(enemigo)
+        case (_,Muerto) => Ganador(atacante)
         case _ => SiguenPeleando(atacante,enemigo)
       }
     }

@@ -44,6 +44,7 @@ object SetUp {
   val freezer = Guerrero(Monstruo, 2000, 3000, List(), Set(kamehameha, onda(100)), Normal)
   val yamcha = Guerrero(Humano, 2000, 2000, List(Filosa,SemillaDelErmitaño), Set(UsarItem(Filosa),UsarItem(SemillaDelErmitaño)), Normal)
   val cellJr = Guerrero(Monstruo, 2000, 2000, List(), Set(onda(300)), Normal)
+  val humano1701KiKamehameha = Guerrero(Humano, 1701, 3000, List(), Set(onda(400)), Normal)
   
   val magiaDende = (luchadores: Luchadores) => {
     (luchadores._1.aumentarKi(500), luchadores._2.disminuirKi(200))

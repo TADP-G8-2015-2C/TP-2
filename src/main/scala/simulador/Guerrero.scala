@@ -88,7 +88,10 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
     val luchadores = (this, enemigo)
     val movMasEfectivo = movimientos.maxBy { mov => criterio(mov(luchadores)) }
-    if (criterio(movMasEfectivo(luchadores)) <= 0)
+    
+    if(luchadores._1.estado == Muerto)
+      noHaceNada
+    else if (criterio(movMasEfectivo(luchadores)) <= 0)
       throw new NoTieneMovimientoMasEfectivoException("No tiene movimiento mas efectivo contra oponente")
     else movMasEfectivo
   }
@@ -150,11 +153,23 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     val semilla: ResultadoDePelea = SiguenPeleando(this,enemigo)
     unPlan.foldLeft(semilla)(pelearDadoMovimiento)
   }
+  
+  def pelearContra2(enemigo: Guerrero)(unPlan: PlanDeAtaque): ResultadoDePelea = {
+    val luchadores = this.pelearUnRound(unPlan.head)(enemigo)()
+    (luchadores._1.estado, luchadores._2.estado, unPlan.size) match {
+      case (Muerto, _, _) => Ganador(luchadores._2)
+      case (_, Muerto, _) => Ganador(luchadores._1)
+      case (_, _, 1) => NoHayGanador
+      case _ => pelearContra2(enemigo)(unPlan.drop(1))
+    }
+  }
+  
 }
 
 trait ResultadoDePelea
 case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea
-case class Ganador(luchadores: Luchadores) extends ResultadoDePelea
+case class Ganador(luchador: Guerrero) extends ResultadoDePelea
+case object NoHayGanador extends ResultadoDePelea
 
 trait Estado
 

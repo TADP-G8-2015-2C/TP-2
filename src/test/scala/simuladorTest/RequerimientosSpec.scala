@@ -97,5 +97,64 @@ class RequerimientosSpec extends FlatSpec with Matchers {
       yamcha.planDeAtaqueContra(cellJr, 2)(gastaMenosKi)
     }
   }
+  
+  //test pelearContra
+  
+  "freezer" should "ganar la pelea contra maestroRoshi al lanzarle un ataque mortal en la primera" in {
+    
+    val resultadoPelea = freezer.pelearContra(maestroRoshi)(List(onda(500)))
+    
+    //En este caso, freezer lo ataca con onda(500) y lo mata, por ende no lo contraataca
+    //por usar onda, freezer pierde 500. Como era solo un movimiento en el plan,
+    //cumplió de llegar al final luego de este primerRound, con freezer como ganador
+    
+    val freezerLuegoDePelear = freezer.copy(ki = freezer.ki - 500)
+    
+    assert(resultadoPelea === Ganador(freezerLuegoDePelear))
+  }
+  
+  "freezer" should "ganar la pelea contra maestroRoshi en 1er round, aunque están planificados más ataques" in {
+    
+    val resultadoPelea = freezer.pelearContra(maestroRoshi)(List(onda(500), kamehameha))
+   
+    val freezerLuegoDePelear = freezer.copy(ki = freezer.ki - 500)
+    
+    assert(resultadoPelea === Ganador(freezerLuegoDePelear))
+  }
+  
+  "maestroRoshi" should "pierde la pelea contra freezer, ya que ataca y no mata, y freezer después lo liquida" in {
+    
+    val resultadoPelea = maestroRoshi.pelearContra(freezer)(List(onda(100)))
 
+    val freezerLuegoDePelear = freezer.copy(ki = freezer.ki - 500 - 50)
+    
+    assert(resultadoPelea === Ganador(freezerLuegoDePelear))
+  }
+  
+  "piccolo" should "ganar por poco, luego de 2 ataques planificados" in {
+    
+   val resultadoPelea = piccolo.pelearContra(humano1701KiKamehameha)(List(kamehameha, onda(160)))
+   //el kamehameha le saca 1000 al humano, dejandolo en 701. piccolo pierde 500 y queda en 1000
+   //a su vez, como humano tiene onda(400), con lo que él queda en 301 y piccolo en 200
+   //casi muerto, piccolo tira su onda(160), quedando él en 40 y su rival con 301 - 400 < 0 => Muerto!
+       
+   val piccoloLuegoDePelear = piccolo.copy(ki = piccolo.ki - 500 - 800 - 160)
+   
+   assert(resultadoPelea === Ganador(piccoloLuegoDePelear))
+   
+  }
+  
+  "piccolo y el humano1701KiKamehameha" should "ninguna ganar y seguir peleando luego de usar todos los mov" in {
+    
+   val resultadoPelea = piccolo.pelearContra(humano1701KiKamehameha)(List(kamehameha))
+   //el kamehameha le saca 1000 al humano, dejandolo en 701. piccolo pierde 500 y queda en 1000
+   //a su vez, como humano tiene onda(400), con lo que él queda en 301 y piccolo en 200
+       
+   val piccoloLuegoDePelear = piccolo.copy(ki = piccolo.ki - 500 - 800)
+   val humanoLuegoDePelear = humano1701KiKamehameha.copy(ki = humano1701KiKamehameha.ki - 1000 - 400)
+   
+   assert(resultadoPelea === SiguenPeleando(piccoloLuegoDePelear, humanoLuegoDePelear))
+    
+  }
+  
 }
