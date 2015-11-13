@@ -1,5 +1,6 @@
 package simulador
 
+import scala.util.Try
 import scala.collection.immutable.List
 import scala.collection.immutable.Set
 import scala.collection.GenTraversableOnce
@@ -83,87 +84,61 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
 
   def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax)
-
-  def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Movimiento = {
+  //REQUERIMIENTOS
+  def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Option[Movimiento] = {
     if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
     val luchadores = (this, enemigo)
     val movMasEfectivo = movimientos.maxBy { mov => criterio(mov(luchadores)) }
-    
-    if(luchadores._1.estado == Muerto)
-      noHaceNada
-    else if (criterio(movMasEfectivo(luchadores)) <= 0)
-      throw new NoTieneMovimientoMasEfectivoException("No tiene movimiento mas efectivo contra oponente")
-    else movMasEfectivo
+
+    if (luchadores._1.estado == Muerto || criterio(movMasEfectivo(luchadores)) <= 0) None
+    else Some(movMasEfectivo)
   }
 
   //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
   //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
   //haciendo que nuestro método no se ejecute con la misma interfaz del que está en enunciado.
   def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)(criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
-    val luchadores = movElegido(this, enemigo)
-    val movContraAtaque = luchadores._2.movimientoMasEfectivoContra(luchadores._1)(criterio)
-    val luchadoresFinal = movContraAtaque(luchadores._2, luchadores._1)
-    (luchadoresFinal._2, luchadoresFinal._1)
+    val luchadores = movElegido(this, enemigo).swap
+    val movContraAtaque: Option[Movimiento] = luchadores._1.movimientoMasEfectivoContra(luchadores._2)(criterio)
+    movContraAtaque.fold(luchadores)(_(luchadores)).swap
   }
+
+  type PlanDeAtaque = List[Movimiento]
 
   def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): List[Movimiento] = {
     val luchadores = (this, enemigo)
     val plan: List[Movimiento] = List()
     val tupla = (luchadores, plan)
 
-    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)((tupla, pepita) => {
-      val ((atacante, defensor), plan) = tupla
-      val movIntermedio: Movimiento = atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
-      (atacante.pelearUnRound(movIntermedio)(defensor)(unCriterio), plan.:+(movIntermedio))
+    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)({case (((atacante, defensor), plan), _) => 
+      val movIntermedio: Option[Movimiento] = atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
+      movIntermedio.fold(((atacante, defensor), plan))(m => (atacante.pelearUnRound(m)(defensor)(unCriterio), plan.:+(movIntermedio.get)))//habría que revisar enunciado porque acá hago que devuelva plan más corto en caso de que no tenga un movMasEfectivo
     })._2
 
   }
 
-  type PlanDeAtaque = List[Movimiento]
-
-  def planDeAtaqueContra2(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): PlanDeAtaque = {
-
-    val luchadores = (this, enemigo)
-    val planDeAtaque: PlanDeAtaque = List()
-
-    val agregarMovmientoAlPlanLuegoDeEjecutar = (luchadoresYPlan: (Luchadores, PlanDeAtaque), round: Int) => {
-      val luchadoresAhora = luchadoresYPlan._1
-      val plan = luchadoresYPlan._2
-
-      val movimientoAAgregar = luchadoresAhora._1.movimientoMasEfectivoContra(luchadoresAhora._2)(unCriterio)
-
-      (luchadoresAhora._1.pelearUnRound(movimientoAAgregar)(luchadoresAhora._2)(), plan.+:(movimientoAAgregar))
-    }
-
-    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, planDeAtaque)(agregarMovmientoAlPlanLuegoDeEjecutar)._2
-  }
-
-  //ahora le meto Unit porque puede devolver o un Guerrero o Luchadores. Más adelante
-  //ver de hacer algo mejor...
-  //boceto muy básico, no cumple con lo pedido...
-  //investigar cómo salir de foldLeft o ver de usar find o algo así...
   def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque): ResultadoDePelea = {
 
-    def pelearDadoMovimiento (resultado: ResultadoDePelea, movimiento: Movimiento) :ResultadoDePelea = {
+    def pelearDadoMovimiento(resultado: ResultadoDePelea, movimiento: Movimiento): ResultadoDePelea = {
       resultado match {
         case SiguenPeleando(luchadores) => dameGanador(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
-        case Ganador(luchadores) => Ganador(luchadores)
+        case Ganador(luchadores)        => Ganador(luchadores)
       }
     }
-    val semilla: ResultadoDePelea = SiguenPeleando(this,enemigo)
+    val semilla: ResultadoDePelea = SiguenPeleando(this, enemigo)
     unPlan.foldLeft(semilla)(pelearDadoMovimiento)
   }
-  
+
   def pelearContra2(enemigo: Guerrero)(unPlan: PlanDeAtaque): ResultadoDePelea = {
     val luchadores = this.pelearUnRound(unPlan.head)(enemigo)()
     (luchadores._1.estado, luchadores._2.estado, unPlan.size) match {
       case (Muerto, _, _) => Ganador(luchadores._2)
       case (_, Muerto, _) => Ganador(luchadores._1)
-      case (_, _, 1) => NoHayGanador
-      case _ => pelearContra2(enemigo)(unPlan.drop(1))
+      case (_, _, 1)      => NoHayGanador
+      case _              => pelearContra2(enemigo)(unPlan.drop(1))
     }
   }
-  
+
 }
 
 trait ResultadoDePelea
