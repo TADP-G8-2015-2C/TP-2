@@ -97,7 +97,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
   //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
   //haciendo que nuestro método no se ejecute con la misma interfaz del que está en enunciado.
-  def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)(criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
+  def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)(implicit criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
     val luchadores = movElegido(this, enemigo).swap
     val movContraAtaque: Option[Movimiento] = luchadores._1.movimientoMasEfectivoContra(luchadores._2)(criterio)
     movContraAtaque.fold(luchadores)(_(luchadores)).swap
@@ -121,10 +121,13 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def pelearContra(enemigo: Guerrero)(unPlan: PlanDeAtaque): ResultadoDePelea = {
 
     def pelearDadoMovimiento(resultado: ResultadoDePelea, movimiento: Movimiento): ResultadoDePelea = {
+      for {
+        (atacante,enemigo) <- resultado  
+      }yield(atacante.pelearUnRound(movimiento)(enemigo))/*
       resultado match {
         case SiguenPeleando(luchadores) => ResultadoDePelea(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
         case Ganador(luchador)          => Ganador(luchador) //Falta arreglar aca
-      }
+      }*/
     }
     val semilla: ResultadoDePelea = SiguenPeleando(this, enemigo)
     unPlan.foldLeft(ResultadoDePelea(this, enemigo))(pelearDadoMovimiento)
@@ -148,33 +151,33 @@ object ResultadoDePelea {
 }
 
 trait ResultadoDePelea {
-  def map(m: Movimiento): ResultadoDePelea
+  def map(m: Luchadores => Luchadores): ResultadoDePelea
 
-  def filter(criterio: Luchadores ⇒ Boolean): ResultadoDePelea
+  def filter(criterio: Luchadores => Boolean): ResultadoDePelea
 
-  def fold[T](z: T)(op: Luchadores ⇒ T): T
+  def fold[T](z: T)(op: Luchadores => T): T
 
-  def flatMap(f: Luchadores ⇒ ResultadoDePelea): ResultadoDePelea
+  def flatMap(f: Luchadores => ResultadoDePelea): ResultadoDePelea
 }
 case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea {
 
-  def map(m: Movimiento): ResultadoDePelea = ResultadoDePelea(m(luchadores))
+  def map(m: Luchadores => Luchadores): ResultadoDePelea = ResultadoDePelea(m(luchadores))
 
-  def filter(criterio: Luchadores ⇒ Boolean): ResultadoDePelea = ResultadoDePelea(luchadores) // = //Ni idea -- this? o ResultadoDePelea(luchadores)
+  def filter(criterio: Luchadores => Boolean): ResultadoDePelea = ResultadoDePelea(luchadores) // = //Ni idea -- this? o ResultadoDePelea(luchadores)
 
-  def fold[T](z: T)(op: Luchadores ⇒ T): T = op(luchadores)
+  def fold[T](z: T)(op: Luchadores => T): T = op(luchadores)
 
-  def flatMap(f: Luchadores ⇒ ResultadoDePelea): ResultadoDePelea = f(luchadores) //  = ResultadoDePelea(f(luchadores))//esto sería unapply
+  def flatMap(f: Luchadores => ResultadoDePelea): ResultadoDePelea = f(luchadores) //  = ResultadoDePelea(f(luchadores))//esto sería unapply
 }
 case class Ganador(luchador: Guerrero) extends ResultadoDePelea { //el ganador se comporta como el [] de las listas 
   
-  def map(m: Movimiento): ResultadoDePelea = this
+  def map(m: Luchadores => Luchadores): ResultadoDePelea = this
 
-  def filter(criterio: Luchadores ⇒ Boolean): ResultadoDePelea = this
+  def filter(criterio: Luchadores => Boolean): ResultadoDePelea = this
 
-  def fold[T](z: T)(op: Luchadores ⇒ T): T = z
+  def fold[T](z: T)(op: Luchadores => T): T = z
 
-  def flatMap(f: Luchadores ⇒ ResultadoDePelea): ResultadoDePelea = this
+  def flatMap(f: Luchadores => ResultadoDePelea): ResultadoDePelea = this
 }
 
 trait Estado
