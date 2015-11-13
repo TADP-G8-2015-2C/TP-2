@@ -121,30 +121,29 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
     def pelearDadoMovimiento(resultado: ResultadoDePelea, movimiento: Movimiento): ResultadoDePelea = {
       resultado match {
-        case SiguenPeleando(luchadores) => dameGanador(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
-        case Ganador(luchadores)        => Ganador(luchadores)
+        case SiguenPeleando(luchadores) => ResultadoDePelea(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
+        case Ganador(luchador)        => Ganador(luchador)//Falta arreglar aca
       }
     }
     val semilla: ResultadoDePelea = SiguenPeleando(this, enemigo)
-    unPlan.foldLeft(semilla)(pelearDadoMovimiento)
-  }
-
-  def pelearContra2(enemigo: Guerrero)(unPlan: PlanDeAtaque): ResultadoDePelea = {
-    val luchadores = this.pelearUnRound(unPlan.head)(enemigo)()
-    (luchadores._1.estado, luchadores._2.estado, unPlan.size) match {
-      case (Muerto, _, _) => Ganador(luchadores._2)
-      case (_, Muerto, _) => Ganador(luchadores._1)
-      case (_, _, 1)      => NoHayGanador
-      case _              => pelearContra2(enemigo)(unPlan.drop(1))
-    }
+    unPlan.foldLeft(ResultadoDePelea(this, enemigo))(pelearDadoMovimiento)
   }
 
 }
-
+object ResultadoDePelea {
+    def apply(luchadores: Luchadores): ResultadoDePelea = {
+      val(atacante,enemigo) = luchadores
+      (atacante.estado,enemigo.estado) match {
+        case (Muerto,_) => Ganador(enemigo)
+        case (_,Muerto) => Ganador(atacante)
+        case _ => SiguenPeleando(atacante,enemigo)
+      }
+    }
+    def apply(guerrero:Guerrero) = Ganador(guerrero)
+}
 trait ResultadoDePelea
 case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea
 case class Ganador(luchador: Guerrero) extends ResultadoDePelea
-case object NoHayGanador extends ResultadoDePelea
 
 trait Estado
 
