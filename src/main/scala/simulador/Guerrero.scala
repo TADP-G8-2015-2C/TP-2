@@ -110,9 +110,10 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     val plan: List[Movimiento] = List()
     val tupla = (luchadores, plan)
 
-    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)({case (((atacante, defensor), plan), _) => 
-      val movIntermedio: Option[Movimiento] = atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
-      movIntermedio.fold(((atacante, defensor), plan))(m => (atacante.pelearUnRound(m)(defensor)(unCriterio), plan.:+(movIntermedio.get)))//habría que revisar enunciado porque acá hago que devuelva plan más corto en caso de que no tenga un movMasEfectivo
+    List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)({
+      case (((atacante, defensor), plan), _) =>
+        val movIntermedio: Option[Movimiento] = atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
+        movIntermedio.fold(((atacante, defensor), plan))(m => (atacante.pelearUnRound(m)(defensor)(unCriterio), plan.:+(movIntermedio.get))) //habría que revisar enunciado porque acá hago que devuelva plan más corto en caso de que no tenga un movMasEfectivo
     })._2
 
   }
@@ -122,7 +123,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     def pelearDadoMovimiento(resultado: ResultadoDePelea, movimiento: Movimiento): ResultadoDePelea = {
       resultado match {
         case SiguenPeleando(luchadores) => ResultadoDePelea(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
-        case Ganador(luchador)        => Ganador(luchador)//Falta arreglar aca
+        case Ganador(luchador)          => Ganador(luchador) //Falta arreglar aca
       }
     }
     val semilla: ResultadoDePelea = SiguenPeleando(this, enemigo)
@@ -131,19 +132,50 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
 }
 object ResultadoDePelea {
-    def apply(luchadores: Luchadores): ResultadoDePelea = {
-      val(atacante,enemigo) = luchadores
-      (atacante.estado,enemigo.estado) match {
-        case (Muerto,_) => Ganador(enemigo)
-        case (_,Muerto) => Ganador(atacante)
-        case _ => SiguenPeleando(atacante,enemigo)
-      }
+  def apply(luchadores: Luchadores): ResultadoDePelea = {
+    val (atacante, enemigo) = luchadores
+    (atacante.estado, enemigo.estado) match {
+      case (Muerto, _) => Ganador(enemigo)
+      case (_, Muerto) => Ganador(atacante)
+      case _           => SiguenPeleando(atacante, enemigo)
     }
-    def apply(guerrero:Guerrero) = Ganador(guerrero)
+  }
+  def apply(guerrero: Guerrero): ResultadoDePelea = Ganador(guerrero)
+  /*Extractor??
+    def unapply(Ganador(guerrero): ResultadoDePelea): Guerrero  = guerrero
+    def unapply(SiguenPeleando(atacante,enemigo): ResultadoDePelea): Luchadores  = (atacante,enemigo)
+    */
 }
-trait ResultadoDePelea
-case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea
-case class Ganador(luchador: Guerrero) extends ResultadoDePelea
+
+trait ResultadoDePelea {
+  def map(m: Movimiento): ResultadoDePelea
+
+  def filter(criterio: Luchadores ⇒ Boolean): ResultadoDePelea
+
+  def fold[T](z: T)(op: Luchadores ⇒ T): T
+
+  def flatMap(f: Luchadores ⇒ ResultadoDePelea): ResultadoDePelea
+}
+case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea {
+
+  def map(m: Movimiento): ResultadoDePelea = ResultadoDePelea(m(luchadores))
+
+  def filter(criterio: Luchadores ⇒ Boolean): ResultadoDePelea = ResultadoDePelea(luchadores) // = //Ni idea -- this? o ResultadoDePelea(luchadores)
+
+  def fold[T](z: T)(op: Luchadores ⇒ T): T = op(luchadores)
+
+  def flatMap(f: Luchadores ⇒ ResultadoDePelea): ResultadoDePelea = f(luchadores) //  = ResultadoDePelea(f(luchadores))//esto sería unapply
+}
+case class Ganador(luchador: Guerrero) extends ResultadoDePelea { //el ganador se comporta como el [] de las listas 
+  
+  def map(m: Movimiento): ResultadoDePelea = this
+
+  def filter(criterio: Luchadores ⇒ Boolean): ResultadoDePelea = this
+
+  def fold[T](z: T)(op: Luchadores ⇒ T): T = z
+
+  def flatMap(f: Luchadores ⇒ ResultadoDePelea): ResultadoDePelea = this
+}
 
 trait Estado
 
