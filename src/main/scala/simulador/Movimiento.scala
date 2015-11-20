@@ -72,17 +72,6 @@ object ArenaDeCell {
     }
   })
 
-  val formaDigerirDeCell = (luchadores: Luchadores) => {
-    (luchadores._2.raza) match {
-      case Androide => luchadores._1.movimientos ++ luchadores._2.movimientos
-      case _        => luchadores._1.movimientos
-    }
-  }
-
-  val formaDigerirDeMajinBuu = (luchadores: Luchadores) => {
-    luchadores._2.movimientos
-  }
-
   abstract class CriterioDeCombate(criterio: (Luchadores => Int)) extends Function1[Luchadores, Int] {
     def apply(luchadores: Luchadores): Int = {
       criterio(luchadores)
