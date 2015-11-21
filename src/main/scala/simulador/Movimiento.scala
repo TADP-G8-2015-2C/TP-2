@@ -15,7 +15,7 @@ object ArenaDeCell {
         case (Muerto, _, _) => luchadores
         case (Inconsciente, _, UsarItem(SemillaDelErmitaño)) => movimiento(luchadores.onFst(_ quedateNormal))
         case (Inconsciente, _, _) => luchadores
-        case (NiUnaMenos(_), _, movimientoPosta) if movimientoPosta != DejarseFajar => (movimiento(luchadores)._1.copy(estado = Normal), movimiento(luchadores)._2)
+        case (_, _, movimientoPosta) if movimientoPosta != DejarseFajar => (movimiento(luchadores)._1.copy(roundsFajado = 0), movimiento(luchadores)._2)
         case _ => movimiento(luchadores)
       }
     }
@@ -45,7 +45,7 @@ object ArenaDeCell {
   })
 
   case object DejarseFajar extends Movimiento((luchadores: Luchadores) => {
-    luchadores.onFst(_.quedateNiUnaMenos())
+    luchadores.onFst(_.teFajaron())
   })
 
   case object cargarKi extends Movimiento((luchadores: Luchadores) => {

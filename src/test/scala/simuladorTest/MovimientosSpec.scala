@@ -241,30 +241,30 @@ class MovimientosSpec extends FlatSpec with Matchers {
    
    
   //test NiUnaMenos
-  "kingCold" should "kingCold se deja fajar y le cambia el estado" in {
+  "kingCold" should "kingCold se deja fajar y esta 1 round fajado" in {
     val (kingColdAfter, mrSatanAfter) = DejarseFajar(kingCold, mrSatan)
-    assertResult((Normal, NiUnaMenos(1))) {
-      (kingCold.estado, kingColdAfter.estado)
+    assertResult( 1) {
+       kingColdAfter.roundsFajado
     }
   }
   //test genkidama
-  "goku" should "intenta lanzar genkidama sin dejarse fajar" in {
+  "goku" should "intenta lanzar genkidama sin dejarse fajar y gasta 1 de daño" in {
     val (gokuAfter, mrSatanAfter) = genkidama(gokuNormal, mrSatan)
-    assertResult((1000, 1000)) {
+    assertResult((1000, 999)) {
       (gokuAfter.ki, mrSatanAfter.ki)
 
     }
   }
   "goku" should "lanzar genkidama dejandose fajar 2 turnos" in {
     val (gokuAfter, mrSatanAfter) = genkidama(DejarseFajar(DejarseFajar(gokuNormal, mrSatan)))
-    assertResult((1000, 900, Normal)) {
-      (gokuAfter.ki, mrSatanAfter.ki, gokuAfter.estado)
+    assertResult((1000, 900)) {
+      (gokuAfter.ki, mrSatanAfter.ki)
     }
   }
 
-  "goku" should "intenta lanzar genkidama pero antes carga ki y deja de estar en NiUnaMenos" in {
+  "goku" should "intenta lanzar genkidama pero antes carga ki y vuelve a cero rondas fajado, gastando 1" in {
     val (gokuAfter, mrSatanAfter) = genkidama(cargarKi(DejarseFajar(DejarseFajar(gokuNormal, mrSatan))))
-    assertResult((cargarKi(gokuNormal, mrSatan)._1.ki, mrSatan.ki, Normal)) {
+    assertResult((cargarKi(gokuNormal, mrSatan)._1.ki, mrSatan.disminuirKi(1).ki, Normal)) {
       (gokuAfter.ki, mrSatanAfter.ki, gokuAfter.estado)
     }
   }  

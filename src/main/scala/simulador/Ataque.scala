@@ -52,10 +52,7 @@ case class onda(kiNecesario: Int) extends AtaqueEnergico((luchadores: Luchadores
 
 case object genkidama extends AtaqueEnergico((luchadores: Luchadores) => {
   val (l1,l2) = luchadores
-  (l1.estado, l2.raza) match {
-    case (NiUnaMenos(rounds), _) => (0, math.pow(10, rounds).asInstanceOf[Int])
-    case _                       => (0,0)
-  }
+  (0, math.pow(10, l1.roundsFajado).asInstanceOf[Int])
 })
 
 

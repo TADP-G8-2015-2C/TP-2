@@ -9,7 +9,7 @@ import simulador.ArenaDeCell.Luchadores
 import simulador.ArenaDeCell._
 import scala.util.Try
 
-case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado) {
+case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado, roundsFajado: Int = 0) {
 
   def aumentarKi(cuanto: Int) = {
     if (cuanto + ki > kiMax) {
@@ -72,12 +72,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 
   def morite() = copy(estado = Muerto, ki = 0)
-  def quedateNiUnaMenos() = {
-    estado match {
-      case NiUnaMenos(turnos) => copy(estado = NiUnaMenos(turnos + 1))
-      case _                  => copy(estado = NiUnaMenos())
-    }
-  }
+  def teFajaron() = copy(roundsFajado = roundsFajado + 1)
   def quedateInconsciente() = raza.meQuedeInconsciente(this).copy(estado = Inconsciente)
 
   def quedateNormal() = copy(estado = Normal)
@@ -183,5 +178,4 @@ trait Estado
 case object Inconsciente extends Estado
 case object Muerto extends Estado
 case object Normal extends Estado
-case class NiUnaMenos(turnos: Int = 1) extends Estado
   
