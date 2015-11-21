@@ -7,6 +7,7 @@ import scala.collection.GenTraversableOnce
 import simulador.ArenaDeCell.Movimiento
 import simulador.ArenaDeCell.Luchadores
 import simulador.ArenaDeCell._
+import scala.util.Try
 
 case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado) {
 
@@ -104,16 +105,16 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   type PlanDeAtaque = List[Movimiento]
 
-  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): List[Movimiento] = {
+  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): Try[List[Movimiento]] = Try{
     val luchadores = (this, enemigo)
     val plan: List[Movimiento] = List()
     val tupla = (luchadores, plan)
 
     List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)({
       case (((atacante, defensor), plan), _) =>
-        val movIntermedio: Option[Movimiento] = atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
-        movIntermedio.fold(((atacante, defensor), plan))(m => 
-          (atacante.pelearUnRound(m,unCriterio)(defensor), plan.:+(movIntermedio.get))) //habría que revisar enunciado porque acá hago que devuelva plan más corto en caso de que no tenga un movMasEfectivo
+      atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
+      .fold(throw new NoHayMovMasEfectivoParaGenerarPlanException("Fallo el plan"))(m => 
+          (atacante.pelearUnRound(m,unCriterio)(defensor), plan.:+(m))) 
     })._2
 
   }
@@ -175,6 +176,7 @@ case class Ganador(luchador: Guerrero) extends ResultadoDePelea { //el ganador s
 
   def flatMap(f: Luchadores => ResultadoDePelea): ResultadoDePelea = this
 }
+
 
 trait Estado
 

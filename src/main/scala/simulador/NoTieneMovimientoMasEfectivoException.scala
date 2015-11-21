@@ -1,5 +1,5 @@
 package simulador
 
-case class NoTieneMovimientoMasEfectivoException(smth:String) extends RuntimeException(smth) {
+case class NoHayMovMasEfectivoParaGenerarPlanException(smth:String) extends RuntimeException(smth) {
   
 }

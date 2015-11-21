@@ -3,6 +3,7 @@ package simuladorTest
 import simulador._
 import simulador.ArenaDeCell._
 import simulador.Guerrero._
+import simulador.NoHayMovMasEfectivoParaGenerarPlanException
 
 import org.scalatest._
 import org.scalatest.FlatSpec
@@ -14,6 +15,8 @@ import scala.collection.GenTraversableOnce
 
 import simulador.TuplasUtils._
 import simuladorTest.SetUp._
+
+import scala.util.Try
 
 class RequerimientosSpec extends FlatSpec with Matchers {
 
@@ -89,13 +92,30 @@ class RequerimientosSpec extends FlatSpec with Matchers {
 
   }
   //test de plan de ataque
+  
+  "yamcha" should "puede planificar ataque contra cell jr" in {
+    assert(yamcha.planDeAtaqueContra(cellJr, 2)(gastaMenosKi).isSuccess)
+  }
  
   "yamcha" should "planificar ataque contra cell jr" in {
     assertResult(List(UsarItem(Filosa),UsarItem(SemillaDelErmitaño))) {
-      yamcha.planDeAtaqueContra(cellJr, 2)(gastaMenosKi)
+      yamcha.planDeAtaqueContra(cellJr, 2)(gastaMenosKi).get
     }
   }
   
+  
+   "chiChi" should "No devuelve plan de ataque al no tener movimientos más efectivos" in {
+     assert(chiChi.planDeAtaqueContra(goku, 2)(mayorVentajaKi).isFailure)
+  }
+   
+     
+   "chiChi" should "falla al abrir el Try de plan al no tener movimientos más efectivos" in {
+     val thrown = intercept[NoHayMovMasEfectivoParaGenerarPlanException] {
+      chiChi.planDeAtaqueContra(goku, 2)(mayorVentajaKi).get
+    }
+    assert(thrown.getMessage === "Fallo el plan")
+  }
+    
   //test pelearContra
   
   "freezer" should "ganar la pelea contra maestroRoshi al lanzarle un ataque mortal en la primera" in {
