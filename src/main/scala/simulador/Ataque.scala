@@ -4,53 +4,30 @@ import simulador.ArenaDeCell.Movimiento
 import simulador.TuplasUtils._
 import simulador.ArenaDeCell.Luchadores
 
-/*
-  abstract class Ataque(ataque: (Luchadores => Luchadores)) extends Movimiento((luchadores: Luchadores) => {
-    def apply(luchadores: Luchadores): Luchadores = {
-      (luchadores._1.estado, luchadores._2.estado, this) match {
-        case _ => ataque(luchadores)
-      }
-    }
-  })*/
-/*
-abstract class AtaqueEnergia(ataque: Function[Luchadores, (Int,Int)]) 
-                                              extends Movimiento((luchadores: Luchadores) => {
-  override def apply(luchadores: Luchadores): Luchadores = {
-   super apply(ataque)
-     val (kiGastado, kiDañado) = ataque(luchadores)
-     (luchadores._1.raza,luchadores._2.raza) match {
-       case (Androide(bateria1),Androide(bateria2))  => (luchadores._1.copy(raza = Androide(bateria1 -kiGastado)),
-                                        luchadores._2.copy(raza = Androide(bateria2 + kiDañado)))
-        case (Androide(bateria1),_)  => (luchadores._1.copy(raza = Androide(bateria1 -kiGastado)), 
-                                        luchadores._2.disminuirKi(kiDañado))
-        case (_,Androide(bateria2))  => (luchadores._1.disminuirKi(kiGastado), 
-                                        luchadores._2.copy(raza = Androide(bateria2 + kiDañado)))
-       case (_,_) => luchadores.//(luchadores._1.disminuirKi(kiGastado), luchadores._2.disminuirKi(kiDañado))
-     }
-  }
-}) */
-
-//case class Fisico(ataque: Movimiento) extends Ataque {}
-
 case object muchosGolpesNinja extends Movimiento((luchadores: Luchadores) => {
   (luchadores._1.raza, luchadores._2.raza) match {
     case (Humano, Androide) => (luchadores._1.disminuirKi(10), luchadores._2)
-    case (_, _) => if ((luchadores._1.ki > luchadores._2.ki)) {
+    case (_, _) => 
+      if ((luchadores._1.ki > luchadores._2.ki)) 
       (luchadores._1, luchadores._2 disminuirKi (20))
-    } else {
+     else 
       (luchadores._1.disminuirKi(20), luchadores._2)
-    }
+    
   }
 })
 
 case object explotar extends Movimiento((luchadores: Luchadores) => {
-  (luchadores._1.raza, luchadores._2.raza) match {
-    case (Monstruo, Namekusein) => (luchadores._1.morite(), luchadores._2 disminuirKiNamekusein (luchadores._1.ki * 2))
-    case (Androide, Namekusein) => (luchadores._1.morite(), luchadores._2 disminuirKiNamekusein (luchadores._1.ki * 3))
-    case (Monstruo, _)          => (luchadores._1.morite(), luchadores._2 disminuirKi (luchadores._1.ki * 2))
-    case (Androide, _)          => (luchadores._1.morite(), luchadores._2 disminuirKi (luchadores._1.ki * 3))
-    case (_, _)                 => luchadores
-  }
+    val(l1,l2) = luchadores
+    val explotables: List[Raza] = List(Monstruo, Androide)
+    if (explotables.contains(l1.raza))
+    (l1.morite(), (luchadores._1.raza, luchadores._2.raza) match {
+    case (Monstruo, Namekusein) => l2 disminuirKiNamekusein (l1.ki * 2)
+    case (Androide, Namekusein) => l2 disminuirKiNamekusein (l1.ki * 3)
+    case (Monstruo, _)          => l2 disminuirKi (l1.ki * 2)
+    case (Androide, _)          => l2 disminuirKi (l1.ki * 3)
+  })
+    else
+      luchadores
 })
 
 abstract class AtaqueEnergico(unAtaque: Luchadores =>(Int,Int)) extends Movimiento((luchadores: Luchadores) => {
