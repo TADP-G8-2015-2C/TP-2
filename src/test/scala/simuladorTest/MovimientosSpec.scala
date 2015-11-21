@@ -62,12 +62,13 @@ class MovimientosSpec extends FlatSpec with Matchers {
     }
   }
   "gokuNormal" should "carga ki y se convierte en ss " in {
-    assertResult(Saiyajin(true, 2)) {
-      ConvertirseEnSS(gokuNormal.aumentarKi(25000), mrSatan)._1.raza
+    val (gokuAfter,mrSatanAfter) = ConvertirseEnSS(gokuNormal.aumentarKi(25000), mrSatan)
+    assertResult((Saiyajin(true),SSJ(1))) {
+     (gokuAfter.raza,gokuAfter.estado)
     }
   }
   "gokuNormal" should "se convierte en ss y aumenta su kiMax" in {
-    assertResult(gokuNormal.kiMax * (1 + 1) * 5) {
+    assertResult(gokuNormal.kiMax * (0+1) * 5) {
       ConvertirseEnSS(gokuNormal.aumentarKi(25000), mrSatan)._1.kiMax
     }
   }
@@ -78,8 +79,9 @@ class MovimientosSpec extends FlatSpec with Matchers {
     }
   }
   "gokuSS3" should "deja de ser ss" in {
-    assertResult(Saiyajin(true, 1)) {
-      gokuSS3.dejarDeSerSS().raza
+    val gokuF0 = gokuSS3.dejarDeSerSS()
+    assertResult((Saiyajin(true),Normal)) {
+      (gokuF0.raza,gokuF0.estado)
     }
   }
   "gokuSS3" should "deja de ser ss y se le modifica bien su ki" in {
@@ -116,8 +118,8 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   "gokuNormal" should "se convierte en Mono" in {
     val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
-    assertResult(Saiyajin(true, 1, true)) {
-      (gokuNormalAfter.raza)
+    assertResult((Saiyajin(true),MonoGigante)) {
+      (gokuNormalAfter.raza,gokuNormalAfter.estado)
     }
   }
   "gokuNormal" should "se convierte en Mono y su ki se recupera a su viejo KiMax" in {
@@ -135,8 +137,8 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
   "gokuSS3" should "se convierte en Mono" in {
     val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
-    assertResult(Saiyajin(true, 1, true)) {
-      (gokuSS3After.raza)
+    assertResult((Saiyajin(true),MonoGigante)) {
+      (gokuSS3After.raza,gokuSS3After.estado)
     }
   }
 
@@ -380,21 +382,23 @@ class MovimientosSpec extends FlatSpec with Matchers {
   }
 
   "gokuNormal" should " pierde cola" in {
-    assertResult(Saiyajin(false, 1, false)) {
+    assertResult(Saiyajin(false)) {
       UsarItem(Filosa)((yajirobe, gokuNormal))._2.raza
     }
   }
 
-  "monoGigante" should " pierde cola y se queda saiyajin petoso" in {
-    assertResult(Saiyajin(false, 1, false)) {
-      UsarItem(Filosa)((yajirobe, monoGigante))._2.raza
+  "monoGigante" should " pierde cola y se queda saiyajin inconsciente" in {
+    val exMono = UsarItem(Filosa)((yajirobe, monoGigante))._2
+    assertResult((Saiyajin(false), Inconsciente)) {
+      (exMono.raza,exMono.estado)
     }
   }
   "yajirobe" should "cortar cola de goku y quedar en 1 de ki por ser este un saiyajin con cola y darle con arma filosa" in {
 
-    val luchadoresLuegoDeUsarItemFiloso = UsarItem(Filosa)((yajirobe, gokuSS3))
-
-    assert(luchadoresLuegoDeUsarItemFiloso._2.raza === Saiyajin(false, 3) && luchadoresLuegoDeUsarItemFiloso._2.ki === 1)
+    val (l1,l2) = UsarItem(Filosa)((yajirobe, gokuSS3))
+     assertResult(Saiyajin(false),SSJ(3),1){
+      (l2.raza,l2.estado,l2.ki)
+    }
   }
 
   //Test usarItem Fuego

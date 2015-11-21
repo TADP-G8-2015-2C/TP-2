@@ -51,7 +51,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def recuperarMaxPotencial() = copy(ki = kiMax)
 
-  def esbueno() = List(Saiyajin(_, _, _), Namekusein, Humano).contains(this.raza) //Ez game
+  def esbueno() = List(Saiyajin(_), Namekusein, Humano).contains(this.raza) //Ez game
   def esMalo() = List(Androide, Monstruo).contains(this.raza) //no se puede hacer el contrario por la raza fusion ¬¬
 
   def disminuirMunicion(cant: Int) = {
@@ -60,9 +60,9 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 
   def dejarDeSerSS() = {
-    (raza) match {
-      case (Saiyajin(cola, nivel, false)) if nivel > 1 => copy(raza = Saiyajin(cola, 1, false), kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
-      case (_)                                         => this
+    (estado) match {
+      case (SSJ(nivel)) if nivel > 1 => copy(estado =Normal, kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
+      case (_)                       => this
     }
   }
 
@@ -71,18 +71,29 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   }
 
+  def subirDeNivel() = {
+    estado match {
+      case SSJ(nivel) if ki >= kiMax => copy(estado = SSJ(nivel + 1))
+      case _                         => this
+    }
+  }
+
   def morite() = copy(estado = Muerto, ki = 0)
   def teFajaron() = copy(roundsFajado = roundsFajado + 1)
-  def quedateInconsciente() = raza.meQuedeInconsciente(this).copy(estado = Inconsciente)
+  def quedateInconsciente() = dejarDeSerSS().copy(estado = Inconsciente)
 
   def quedateNormal() = copy(estado = Normal)
 
-  def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
+  def cortarCola() = {
+    (estado,raza) match {
+      case (MonoGigante,Saiyajin(true)) => copy(raza = Saiyajin(false), ki = 1, kiMax = raza.disminuirKiMax(this), estado = Inconsciente)
+      case  (_,Saiyajin(true)) => copy(Saiyajin(false),  ki = 1)
+      case _ => this
+    }
+  }
 
-  def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax)
+  def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax, estado = MonoGigante)
 
-
-  
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Option[Movimiento] = {
     if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
     val luchadores = (this, enemigo)
@@ -100,16 +111,16 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   type PlanDeAtaque = List[Movimiento]
 
-  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): Try[List[Movimiento]] = Try{
+  def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): Try[List[Movimiento]] = Try {
     val luchadores = (this, enemigo)
     val plan: List[Movimiento] = List()
     val tupla = (luchadores, plan)
 
     List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)({
       case (((atacante, defensor), plan), _) =>
-      atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
-      .fold(throw new NoHayMovMasEfectivoParaGenerarPlanException("Fallo el plan"))(m => 
-          (atacante.pelearUnRound(m,unCriterio)(defensor), plan.:+(m))) 
+        atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
+          .fold(throw new NoHayMovMasEfectivoParaGenerarPlanException("Fallo el plan"))(m =>
+            (atacante.pelearUnRound(m, unCriterio)(defensor), plan.:+(m)))
     })._2
 
   }
@@ -118,8 +129,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
     def pelearDadoMovimiento(resultado: ResultadoDePelea, movimiento: Movimiento): ResultadoDePelea = {
       for {
-        (atacante,enemigo) <- resultado  
-      }yield(atacante.pelearUnRound(movimiento)(enemigo))/*
+        (atacante, enemigo) <- resultado
+      } yield (atacante.pelearUnRound(movimiento)(enemigo)) /*
       resultado match {
         case SiguenPeleando(luchadores) => ResultadoDePelea(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
         case Ganador(luchador)          => Ganador(luchador) //Falta arreglar aca
@@ -162,7 +173,7 @@ case class SiguenPeleando(luchadores: Luchadores) extends ResultadoDePelea {
   def flatMap(f: Luchadores => ResultadoDePelea): ResultadoDePelea = f(luchadores) //  = ResultadoDePelea(f(luchadores))//esto sería unapply
 }
 case class Ganador(luchador: Guerrero) extends ResultadoDePelea { //el ganador se comporta como el [] de las listas 
-  
+
   def map(m: Luchadores => Luchadores): ResultadoDePelea = this
 
   def filter(criterio: Luchadores => Boolean): ResultadoDePelea = this
@@ -172,10 +183,11 @@ case class Ganador(luchador: Guerrero) extends ResultadoDePelea { //el ganador s
   def flatMap(f: Luchadores => ResultadoDePelea): ResultadoDePelea = this
 }
 
-
 trait Estado
 
 case object Inconsciente extends Estado
 case object Muerto extends Estado
 case object Normal extends Estado
+case object MonoGigante extends Estado
+case class SSJ(nivel: Int = 1) extends Estado
   

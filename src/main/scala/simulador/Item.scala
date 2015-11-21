@@ -13,7 +13,7 @@ case class UsarItem(item: Item) extends Movimiento((luchadores: Luchadores) => {
     (item, luchadores._1.raza, luchadores._2.raza) match {
       case (Roma, _, Androide)                    => luchadores
       case (Roma, _, _) if luchadores._2.ki < 300 => luchadores.onSec(_ quedateInconsciente)
-      case (Filosa, _, Saiyajin(true, _, _))      => luchadores.onSec(_ cortarCola)
+      case (Filosa, _, Saiyajin(true))      => luchadores.onSec(_ cortarCola)
       case (Filosa, _, _)                         => luchadores.onSec(_.disminuirKi(luchadores._1.ki / 100))
       case (SemillaDelErmitaño, _, _)             => (l1.recuperarMaxPotencial(),l2)
       case (Fuego(cant), _, _) if cant <= 0       => luchadores
