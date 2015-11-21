@@ -84,7 +84,9 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def cortarCola() = copy(raza = raza.cortarCola, ki = raza.kiLuegoDeCortarCola(this), kiMax = raza.disminuirKiMax(this))
 
   def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax)
-  //REQUERIMIENTOS
+
+
+  
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Option[Movimiento] = {
     if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
     val luchadores = (this, enemigo)
@@ -94,10 +96,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     else Some(movMasEfectivo)
   }
 
-  //Si bien así es mejor porque podemos definirle el criterio de contrataque al enemigo,
-  //cuando se llama a este método pelearUnRound, nos obliga a agregarle el tercer parámetro,
-  //haciendo que nuestro método no se ejecute con la misma interfaz del que está en enunciado.
-  def pelearUnRound(movElegido: Movimiento)(enemigo: Guerrero)(implicit criterio: CriterioDeCombate = mayorVentajaKi): Luchadores = {
+  def pelearUnRound(movElegido: Movimiento, criterio: CriterioDeCombate = mayorVentajaKi)(enemigo: Guerrero): Luchadores = {
     val luchadores = movElegido(this, enemigo).swap
     val movContraAtaque: Option[Movimiento] = luchadores._1.movimientoMasEfectivoContra(luchadores._2)(criterio)
     movContraAtaque.fold(luchadores)(_(luchadores)).swap
@@ -113,7 +112,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     List.range(1, cantidadDeRounds + 1).foldLeft(luchadores, plan)({
       case (((atacante, defensor), plan), _) =>
         val movIntermedio: Option[Movimiento] = atacante.movimientoMasEfectivoContra(defensor)(unCriterio)
-        movIntermedio.fold(((atacante, defensor), plan))(m => (atacante.pelearUnRound(m)(defensor)(unCriterio), plan.:+(movIntermedio.get))) //habría que revisar enunciado porque acá hago que devuelva plan más corto en caso de que no tenga un movMasEfectivo
+        movIntermedio.fold(((atacante, defensor), plan))(m => 
+          (atacante.pelearUnRound(m,unCriterio)(defensor), plan.:+(movIntermedio.get))) //habría que revisar enunciado porque acá hago que devuelva plan más corto en caso de que no tenga un movMasEfectivo
     })._2
 
   }
@@ -144,10 +144,6 @@ object ResultadoDePelea {
     }
   }
   def apply(guerrero: Guerrero): ResultadoDePelea = Ganador(guerrero)
-  /*Extractor??
-    def unapply(Ganador(guerrero): ResultadoDePelea): Guerrero  = guerrero
-    def unapply(SiguenPeleando(atacante,enemigo): ResultadoDePelea): Luchadores  = (atacante,enemigo)
-    */
 }
 
 trait ResultadoDePelea {

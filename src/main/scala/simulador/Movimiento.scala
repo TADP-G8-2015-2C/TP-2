@@ -25,8 +25,7 @@ object ArenaDeCell {
     (luchadores._1, luchadores._1.raza) match {
       case (_, Namekusein) => cambiarEstado(luchadores)
       case (_, Monstruo)   => cambiarEstado(luchadores)
-      case (guerrero, _) if guerrero.poseeItem(EsferasDelDragon(7)) =>
-        cambiarEstado(luchadores.onFst { l => l.usar7Esferas })
+      case (guerrero, _) if guerrero.poseeItem(EsferasDelDragon(7)) => cambiarEstado(luchadores.onFst(_ usar7Esferas) )
       case (_, _) => luchadores
     }
   })

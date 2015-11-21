@@ -66,7 +66,7 @@ class RequerimientosSpec extends FlatSpec with Matchers {
   //Test del pelearUnRound
   "piccolo" should "atacar con movimiento que posee, y recibir el mejor ataque posible por defecto de parte del enemigo" in {
 
-    val luchadoresDespuesDeRound = piccolo.pelearUnRound(kamehameha)(freezer)()
+    val luchadoresDespuesDeRound = piccolo.pelearUnRound(kamehameha)(freezer)
 
     //Explicación del test para entenderlo al hacerlo. Si quieren después lo borro
     //freezer tiene kamehameha (onda(500)), onda(100). 
@@ -79,8 +79,7 @@ class RequerimientosSpec extends FlatSpec with Matchers {
     assert(luchadoresDespuesDeRound._2.ki === 1250)
   }
   "freezer" should "ataca con movimiento y enemigo muere, entonces el enemigo con contraataca" in {
-    val luchadoresDespuesDeRound = freezer.pelearUnRound(kamehameha)(rojelioCargaKi)()
-
+    val luchadoresDespuesDeRound = freezer.pelearUnRound(kamehameha)(rojelioCargaKi)
     //Freezer hace kamehameha y deja a rojelio en 1 de ki (tiene 1001). Rojelio (un Namekusein) tiene entre su movimientos a
     //Magia(superMagia) la cual recupera todo su ki hasta el máximo y disminuye 100000 de ki al oponente
     //matando así a freezer.
