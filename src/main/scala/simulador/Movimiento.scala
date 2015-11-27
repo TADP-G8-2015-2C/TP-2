@@ -78,7 +78,7 @@ object ArenaDeCell {
     (l1.raza, l1.fase) match {
       case (Saiyajin(cola), SSJ(nivel)) if l1.ki * 2 > l1.kiMax => //como no mono
         (l1.subirDeNivel().copy(kiMax = (nivel + 1) * 5 * l1.kiMax), l2)
-      case (Saiyajin(cola), Ninguna) if l1.ki * 2 > l1.kiMax => //como no mono
+      case (Saiyajin(cola), FaseInicial) if l1.ki * 2 > l1.kiMax => //como no mono
         (l1.copy(fase=SSJ(), kiMax = 5 * l1.kiMax),l2)
       case _ => luchadores
     }

@@ -10,7 +10,7 @@ import simulador.ArenaDeCell._
 import scala.util.Try
 
 case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), 
-    estado: Estado, fase: Fase = Ninguna, roundsFajado: Int = 0) {
+    estado: Estado, fase: Fase = FaseInicial, roundsFajado: Int = 0) {
 
   def aumentarKi(cuanto: Int) = {
     if (cuanto + ki > kiMax) {
@@ -62,7 +62,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def dejarDeSerSS() = {
     (fase) match {
-      case (SSJ(nivel)) if nivel > 1 => copy(fase = Ninguna, kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
+      case (SSJ(nivel)) if nivel > 1 => copy(fase = FaseInicial, kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
       case (_)                       => this
     }
   }
@@ -87,7 +87,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def cortarCola() = {
     (fase, raza) match {
-      case (MonoGigante, Saiyajin(true)) => copy(raza = Saiyajin(false), ki = 1, kiMax = raza.disminuirKiMax(this), estado = Inconsciente)
+      case (MonoGigante, Saiyajin(true)) => copy(raza = Saiyajin(false), ki = 1, kiMax = raza.disminuirKiMax(this), 
+          estado = Inconsciente, fase = FaseInicial)
       case  (_, Saiyajin(true)) => copy(Saiyajin(false),  ki = 1)
       case _ => this
     }
@@ -109,7 +110,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     val movContraAtaque: Option[Movimiento] = luchadores._1.movimientoMasEfectivoContra(luchadores._2)(criterio)
     movContraAtaque.fold(luchadores)(_(luchadores)).swap
   }
-
+  
   type PlanDeAtaque = List[Movimiento]
 
   def planDeAtaqueContra(enemigo: Guerrero, cantidadDeRounds: Int)(unCriterio: CriterioDeCombate): Try[List[Movimiento]] = Try {
@@ -192,7 +193,7 @@ case object Normal extends Estado
 
 trait Fase
 
-case object Ninguna extends Fase
+case object FaseInicial extends Fase
 case object MonoGigante extends Fase
 case class SSJ(nivel: Int = 1) extends Fase
   
