@@ -64,12 +64,12 @@ object SetUp {
 
   val formaDigerirDeCell = (luchadores: Luchadores) => {
     (luchadores._2.raza) match {
-      case Androide => luchadores._1.movimientos ++ luchadores._2.movimientos
-      case _        => luchadores._1.movimientos
+      case Androide => Some(luchadores._1.movimientos ++ luchadores._2.movimientos)
+      case _        => None
     }
   }
 
   val formaDigerirDeMajinBuu = (luchadores: Luchadores) => {
-    luchadores._2.movimientos
+    Some(luchadores._2.movimientos)
   }
 }

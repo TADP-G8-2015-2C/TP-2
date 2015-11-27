@@ -14,9 +14,5 @@ case class Saiyajin(cola: Boolean) extends Raza {
 
   override def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax * 3
   override def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax / 3
-
-//  require(monoGigante == true, nivel == 0)//si es monoGigante no puede ser saiyajin
-//  require(cola == false,monoGigante == false)// si no tiene cola no puede ser monoGigante
-  //TODO poner estos require pero bien
 }
 

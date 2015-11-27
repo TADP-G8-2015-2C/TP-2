@@ -167,14 +167,14 @@ class MovimientosSpec extends FlatSpec with Matchers {
     assert(luchadoresLuegoDeComer._2.estado === Muerto)
   }
   
-  "cell" should "comerse a enemigo (NO androide) y solo matarlo, sin aprender nada" in {
+  "cell" should "comerse a enemigo (NO androide) y no matarlo, sin aprender nada" in {
     
     assert(cell.movimientos.contains(explotar))
     
     val luchadoresLuegoDeComer = ComerseAOtro(formaDigerirDeCell)(cell, maestroRoshi)
     
     assert(luchadoresLuegoDeComer._1.movimientos.diff(Set(explotar)) === Set())
-    assert(luchadoresLuegoDeComer._2.estado === Muerto)
+    assert(luchadoresLuegoDeComer._2.estado === Normal)
   }
   
   "mainBuu" should "comerse a enemigo (cualquiera) y quedarse con sus mov. y olvidar lo anterior" in {

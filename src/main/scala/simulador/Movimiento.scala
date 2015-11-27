@@ -38,9 +38,15 @@ object ArenaDeCell {
     }
   })
 
-  case class ComerseAOtro(digestion: Function1[Luchadores, Set[Movimiento]]) extends Movimiento((luchadores: Luchadores) => {
+  case class ComerseAOtro(digestion: Function1[Luchadores, Option[Set[Movimiento]]]) extends Movimiento((luchadores: Luchadores) => {
+   /*  for {
+       (l1,l2) <-luchadores
+       if(l1.raza == Monstruo && l1.ki > l2.ki)
+       mov1 <- digestion(l1,l2)
+     }
+      mov1.fold(luchadores){mov=>(luchadores._1.copy(movimientos = mov), luchadores._2 morite)}*/
     (luchadores._1.raza, luchadores._2.ki) match {
-      case (Monstruo, kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = digestion(luchadores)), luchadores._2 morite)
+      case (Monstruo, kiOponente) if luchadores._1.ki > kiOponente => digestion(luchadores).fold(luchadores){mov=>(luchadores._1.copy(movimientos = mov), luchadores._2 morite)} 
       case (_, _) => luchadores
     }
   })
