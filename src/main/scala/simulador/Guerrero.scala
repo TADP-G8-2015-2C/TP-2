@@ -9,7 +9,8 @@ import simulador.ArenaDeCell.Luchadores
 import simulador.ArenaDeCell._
 import scala.util.Try
 
-case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), estado: Estado, roundsFajado: Int = 0) {
+case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), 
+    estado: Estado, fase: Fase, roundsFajado: Int = 0) {
 
   def aumentarKi(cuanto: Int) = {
     if (cuanto + ki > kiMax) {
@@ -60,7 +61,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 
   def dejarDeSerSS() = {
-    (estado) match {
+    (fase) match {
       case (SSJ(nivel)) if nivel > 1 => copy(estado =Normal, kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
       case (_)                       => this
     }
@@ -72,8 +73,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   }
 
   def subirDeNivel() = {
-    estado match {
-      case SSJ(nivel) if ki >= kiMax => copy(estado = SSJ(nivel + 1))
+    fase match {
+      case SSJ(nivel) if ki >= kiMax => copy(fase = SSJ(nivel + 1))
       case _                         => this
     }
   }
@@ -85,14 +86,14 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def quedateNormal() = copy(estado = Normal)
 
   def cortarCola() = {
-    (estado,raza) match {
-      case (MonoGigante,Saiyajin(true)) => copy(raza = Saiyajin(false), ki = 1, kiMax = raza.disminuirKiMax(this), estado = Inconsciente)
-      case  (_,Saiyajin(true)) => copy(Saiyajin(false),  ki = 1)
+    (fase, raza) match {
+      case (MonoGigante, Saiyajin(true)) => copy(raza = Saiyajin(false), ki = 1, kiMax = raza.disminuirKiMax(this), estado = Inconsciente)
+      case  (_, Saiyajin(true)) => copy(Saiyajin(false),  ki = 1)
       case _ => this
     }
   }
 
-  def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax, estado = MonoGigante)
+  def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax, fase = MonoGigante)
 
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Option[Movimiento] = {
     if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
@@ -188,6 +189,8 @@ trait Estado
 case object Inconsciente extends Estado
 case object Muerto extends Estado
 case object Normal extends Estado
-case object MonoGigante extends Estado
-case class SSJ(nivel: Int = 1) extends Estado
+
+trait Fase
+case object MonoGigante extends Fase
+case class SSJ(nivel: Int = 1) extends Fase
   
