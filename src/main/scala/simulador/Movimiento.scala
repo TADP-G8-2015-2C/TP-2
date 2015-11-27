@@ -57,7 +57,7 @@ object ArenaDeCell {
 
   case object cargarKi extends Movimiento((luchadores: Luchadores) => {
     val (l1, l2) = luchadores
-    (l1.raza, l1.estado) match {
+    (l1.raza, l1.fase) match {
       case (Androide, _)                          => luchadores
       case (Saiyajin(_), SSJ(nivel)) if nivel > 0 => luchadores.onFst(_.aumentarKi(150 * nivel)) //como saiyan
       case _                                      => luchadores.onFst(_.aumentarKi(100))
@@ -75,11 +75,11 @@ object ArenaDeCell {
 
   case object ConvertirseEnSS extends Movimiento((luchadores: Luchadores) => {
     val (l1, l2) = luchadores
-    (l1.raza, l1.estado) match {
+    (l1.raza, l1.fase) match {
       case (Saiyajin(cola), SSJ(nivel)) if l1.ki * 2 > l1.kiMax => //como no mono
         (l1.subirDeNivel().copy(kiMax = (nivel + 1) * 5 * l1.kiMax), l2)
-      case (Saiyajin(cola), Normal) if l1.ki * 2 > l1.kiMax => //como no mono
-        (l1.copy(estado=SSJ(), kiMax = 5 * l1.kiMax),l2)
+      case (Saiyajin(cola), Ninguna) if l1.ki * 2 > l1.kiMax => //como no mono
+        (l1.copy(fase=SSJ(), kiMax = 5 * l1.kiMax),l2)
       case _ => luchadores
     }
   })

@@ -15,7 +15,7 @@ object SetUp {
   val mrSatan = Guerrero(Humano, 1000, 50000, List(), Set(), Normal)
   val androide18 = Guerrero(Androide, 1000, 50000, List(), Set(), Normal)
   val dabura = Guerrero(Monstruo, 1000, 50000, List(), Set(), Normal)
-  val gokuSS3 = Guerrero(Saiyajin(true), 20000, 50000, List(FotoDeLaLuna), Set(), SSJ(3))
+  val gokuSS3 = Guerrero(Saiyajin(true), 20000, 50000, List(FotoDeLaLuna), Set(), Normal, SSJ(3))
   val gokuNormal = Guerrero(Saiyajin(true), 1000, 50000, List(FotoDeLaLuna), Set(), Normal)
   val gohanSinCola = Guerrero(Saiyajin(false), 1000, 50000, List(FotoDeLaLuna), Set(), Normal)
   val bardockSinFoto = Guerrero(Saiyajin(true), 1000, 50000, List(), Set(), Normal)
@@ -28,7 +28,7 @@ object SetUp {
   val esferas7: List[Item] = List.range(1, 8).map { n => EsferasDelDragon(n) }
   val krilin = Guerrero(Humano, 5000, 10000, esferas7, Set(), Normal)
   val kingCold = Guerrero(Monstruo, 5000, 10000, List(), Set(), Normal)
-  val monoGigante = Guerrero(Saiyajin(true), 5000, 10000, List(), Set(), MonoGigante)
+  val monoGigante = Guerrero(Saiyajin(true), 5000, 10000, List(), Set(), Normal, MonoGigante)
   val inconsciente = Guerrero(Monstruo, 5000, 10000, List(), Set(), Inconsciente)
   val cell = Guerrero(Monstruo, 10000, 50000, List(), Set(explotar), Normal)
   val majinBuu = Guerrero(Monstruo, 20000, 70000, List(), Set(onda(100)), Normal)

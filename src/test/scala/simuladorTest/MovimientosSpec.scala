@@ -64,7 +64,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   "gokuNormal" should "carga ki y se convierte en ss " in {
     val (gokuAfter,mrSatanAfter) = ConvertirseEnSS(gokuNormal.aumentarKi(25000), mrSatan)
     assertResult((Saiyajin(true),SSJ(1))) {
-     (gokuAfter.raza,gokuAfter.estado)
+     (gokuAfter.raza,gokuAfter.fase)
     }
   }
   "gokuNormal" should "se convierte en ss y aumenta su kiMax" in {
@@ -119,7 +119,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   "gokuNormal" should "se convierte en Mono" in {
     val (gokuNormalAfter, mrSatanAfter) = convertirseEnMonoGigante(gokuNormal, mrSatan)
     assertResult((Saiyajin(true),MonoGigante)) {
-      (gokuNormalAfter.raza,gokuNormalAfter.estado)
+      (gokuNormalAfter.raza,gokuNormalAfter.fase)
     }
   }
   "gokuNormal" should "se convierte en Mono y su ki se recupera a su viejo KiMax" in {
@@ -138,7 +138,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
   "gokuSS3" should "se convierte en Mono" in {
     val (gokuSS3After, mrSatanAfter) = convertirseEnMonoGigante(gokuSS3, mrSatan)
     assertResult((Saiyajin(true),MonoGigante)) {
-      (gokuSS3After.raza,gokuSS3After.estado)
+      (gokuSS3After.raza,gokuSS3After.fase)
     }
   }
 
@@ -397,7 +397,7 @@ class MovimientosSpec extends FlatSpec with Matchers {
 
     val (l1,l2) = UsarItem(Filosa)((yajirobe, gokuSS3))
      assertResult(Saiyajin(false),SSJ(3),1){
-      (l2.raza,l2.estado,l2.ki)
+      (l2.raza,l2.fase,l2.ki)
     }
   }
 

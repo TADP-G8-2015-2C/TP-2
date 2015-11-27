@@ -10,7 +10,7 @@ import simulador.ArenaDeCell._
 import scala.util.Try
 
 case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = List(), movimientos: Set[Movimiento] = Set(), 
-    estado: Estado, fase: Fase, roundsFajado: Int = 0) {
+    estado: Estado, fase: Fase = Ninguna, roundsFajado: Int = 0) {
 
   def aumentarKi(cuanto: Int) = {
     if (cuanto + ki > kiMax) {
@@ -62,7 +62,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
 
   def dejarDeSerSS() = {
     (fase) match {
-      case (SSJ(nivel)) if nivel > 1 => copy(estado =Normal, kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
+      case (SSJ(nivel)) if nivel > 1 => copy(fase = Ninguna, kiMax = kiMax / (5 * (nivel - 1))).aumentarKi(0)
       case (_)                       => this
     }
   }
@@ -191,6 +191,8 @@ case object Muerto extends Estado
 case object Normal extends Estado
 
 trait Fase
+
+case object Ninguna extends Fase
 case object MonoGigante extends Fase
 case class SSJ(nivel: Int = 1) extends Fase
   
