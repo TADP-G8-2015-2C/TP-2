@@ -3,6 +3,7 @@ package simulador
 import scala.collection.immutable.List
 import scala.collection.immutable.Set
 import scala.collection.GenTraversableOnce
+import simulador._
 
 import simulador.TuplasUtils._
 
@@ -15,7 +16,7 @@ object ArenaDeCell {
         case (Muerto, _, _) => luchadores
         case (Inconsciente, _, UsarItem(SemillaDelErmitaño)) => movimiento(luchadores.onFst(_ quedateNormal))
         case (Inconsciente, _, _) => luchadores
-        case (NiUnaMenos(_), _, movimientoPosta) if movimientoPosta != DejarseFajar => (movimiento(luchadores)._1.copy(estado = Normal), movimiento(luchadores)._2)
+        case (_, _, movimientoPosta) if movimientoPosta != DejarseFajar => (movimiento(luchadores)._1.copy(roundsFajado = 0), movimiento(luchadores)._2)
         case _ => movimiento(luchadores)
       }
     }
@@ -24,8 +25,8 @@ object ArenaDeCell {
   case class Magia(cambiarEstado: Function1[Luchadores, Luchadores]) extends Movimiento((luchadores: Luchadores) => {
     (luchadores._1, luchadores._1.raza) match {
       case (_, Namekusein) => cambiarEstado(luchadores)
-      case (_, Monstruo)   => cambiarEstado(luchadores)
-      case (guerrero, _) if guerrero.poseeItem(EsferasDelDragon(7)) => cambiarEstado(luchadores.onFst(_ usar7Esferas) )
+      case (_, Monstruo) => cambiarEstado(luchadores)
+      case (guerrero, _) if guerrero.poseeItem(EsferasDelDragon(7)) => cambiarEstado(luchadores.onFst(_ usar7Esferas))
       case (_, _) => luchadores
     }
   })
@@ -37,37 +38,49 @@ object ArenaDeCell {
     }
   })
 
-  case class ComerseAOtro(digestion: Function1[Luchadores, Set[Movimiento]]) extends Movimiento((luchadores: Luchadores) => {
+  case class ComerseAOtro(digestion: Function1[Luchadores, Option[Set[Movimiento]]]) extends Movimiento((luchadores: Luchadores) => {
+   /*  for {
+       (l1,l2) <-luchadores
+       if(l1.raza == Monstruo && l1.ki > l2.ki)
+       mov1 <- digestion(l1,l2)
+     }
+      mov1.fold(luchadores){mov=>(luchadores._1.copy(movimientos = mov), luchadores._2 morite)}*/
     (luchadores._1.raza, luchadores._2.ki) match {
-      case (Monstruo, kiOponente) if luchadores._1.ki > kiOponente => (luchadores._1.copy(movimientos = digestion(luchadores)), luchadores._2 morite)
+      case (Monstruo, kiOponente) if luchadores._1.ki > kiOponente => digestion(luchadores).fold(luchadores){mov=>(luchadores._1.copy(movimientos = mov), luchadores._2 morite)} 
       case (_, _) => luchadores
     }
   })
 
   case object DejarseFajar extends Movimiento((luchadores: Luchadores) => {
-    luchadores.onFst(_.quedateNiUnaMenos())
+    luchadores.onFst(_.teFajaron())
   })
 
   case object cargarKi extends Movimiento((luchadores: Luchadores) => {
-    luchadores._1.raza match {
-      case Androide                               => luchadores
-      case Saiyajin(_, nivel, false) if nivel > 0 => luchadores.onFst(_.aumentarKi(150 * nivel))
+    val (l1, l2) = luchadores
+    (l1.raza, l1.fase) match {
+      case (Androide, _)                          => luchadores
+      case (Saiyajin(_), SSJ(nivel)) if nivel > 0 => luchadores.onFst(_.aumentarKi(150 * nivel)) //como saiyan
       case _                                      => luchadores.onFst(_.aumentarKi(100))
     }
   })
 
   case object convertirseEnMonoGigante extends Movimiento((luchadores: Luchadores) => {
-    (luchadores._1, luchadores._1.raza) match {
-      case (guerrero, Saiyajin(true, nivel, false)) if guerrero.poseeItem(FotoDeLaLuna) =>
-        (luchadores._1.dejarDeSerSS.transformateEnMono.copy(raza = Saiyajin(true, 1, true)), luchadores._2)
-      case (_, _) => luchadores
+    val (l1, l2) = luchadores
+    (l1.raza, l1.fase) match {
+      case (Saiyajin(true), fase) if l1.poseeItem(FotoDeLaLuna) & fase != MonoGigante =>
+        (l1.dejarDeSerSS.transformateEnMono.copy(raza = Saiyajin(true)), l2)
+      case _ => luchadores
     }
   })
 
   case object ConvertirseEnSS extends Movimiento((luchadores: Luchadores) => {
-    (luchadores._1.raza) match {
-      case (Saiyajin(cola, nivel, false)) if luchadores._1.ki * 2 > luchadores._1.kiMax => (luchadores._1.copy(raza = Saiyajin(cola, nivel + 1, false), kiMax = (nivel + 1) * 5 * luchadores._1.kiMax), luchadores._2)
-      case (_) => luchadores
+    val (l1, l2) = luchadores
+    (l1.raza, l1.fase) match {
+      case (Saiyajin(cola), SSJ(nivel)) if l1.ki * 2 > l1.kiMax => //como no mono
+        (l1.subirDeNivel().copy(kiMax = (nivel + 1) * 5 * l1.kiMax), l2)
+      case (Saiyajin(cola), FaseInicial) if l1.ki * 2 > l1.kiMax => //como no mono
+        (l1.copy(fase=SSJ(), kiMax = 5 * l1.kiMax),l2)
+      case _ => luchadores
     }
   })
 
@@ -93,6 +106,5 @@ object ArenaDeCell {
   case object noMeMato extends CriterioDeCombate((luchadores: Luchadores) => {
     if (luchadores._1.estado == Muerto) 0 else 1
   })
-  
-  
+
 }

@@ -53,11 +53,12 @@ class RequerimientosSpec extends FlatSpec with Matchers {
       goku.movimientoMasEfectivoContra(vegeta)(noMeMato)
     }
   }
-  "kami" should "sin movimientos lanza excepcion al pedirle el mas efectivo" in {
-    val thrown = intercept[NoTieneMovimientosException] {
+  "kami" should "sin movimientos retorna None al pedirle el mas efectivo" in {
+        assertResult(None) {
       kami.movimientoMasEfectivoContra(goku)(mayorVentajaKi)
     }
-    assert(thrown.getMessage === "Antes que aprenda algun movimiento")
+      
+
   }
 
   "chiChi" should " devuelve None al no tener movimientos más efectivos" in {

@@ -1,12 +1,8 @@
 package simulador
 
 abstract class Raza {
-  def cortarCola = this
-  def kiLuegoDeCortarCola(unGuerrero: Guerrero) = unGuerrero.ki
   def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
   def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax
-  def subirDeNivel(unGuerrero: Guerrero) = this
-  def meQuedeInconsciente(unGuerrero: Guerrero) = unGuerrero
 }
 
 case object Monstruo extends Raza 
@@ -14,27 +10,9 @@ case object Humano extends Raza
 case object Androide extends Raza 
 case object Namekusein extends Raza 
 case class Fusionado(guerreroOriginal: Guerrero) extends Raza 
-case class Saiyajin(cola: Boolean, nivel: Int = 1, monoGigante: Boolean = false) extends Raza {
+case class Saiyajin(cola: Boolean) extends Raza {
 
-  override def subirDeNivel(guerrero: Guerrero) = {
-    if (guerrero.ki >= guerrero.kiMax) {
-      copy(nivel = nivel + 1)
-    } else {
-      this
-    }
-  }
-
-  override def cortarCola = copy(cola = false, monoGigante = false)
-  override def kiLuegoDeCortarCola(unGuerrero: Guerrero) = 1 //TODO lo del MonoGigante como tratarlo
   override def aumentarKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax * 3
   override def disminuirKiMax(unGuerrero: Guerrero) = unGuerrero.kiMax / 3
-
-  override def meQuedeInconsciente(unGuerrero: Guerrero) = {
-    unGuerrero.dejarDeSerSS()
-
-  }
-//  require(monoGigante == true, nivel == 0)//si es monoGigante no puede ser saiyajin
-//  require(cola == false,monoGigante == false)// si no tiene cola no puede ser monoGigante
-  //TODO poner estos require pero bien
 }
 
