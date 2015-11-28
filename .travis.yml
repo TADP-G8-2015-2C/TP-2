@@ -3,11 +3,3 @@ scala:
    - 2.11.7
 jdk:
   - oraclejdk8
-
-language: scala
-
-script:
-  - sbt clean coverage test
-
-after_success:
-  - pip install --user codecov && codecov
