@@ -16,7 +16,7 @@ object ArenaDeCell {
         case (Muerto, _, _) => luchadores
         case (Inconsciente, _, UsarItem(SemillaDelErmitaño)) => movimiento(luchadores.onFst(_ quedateNormal))
         case (Inconsciente, _, _) => luchadores
-        case (_, _, movimientoPosta) if movimientoPosta != DejarseFajar => (movimiento(luchadores)._1.copy(roundsFajado = 0), movimiento(luchadores)._2)
+        case (NiUnaMenos(_), _, movimientoPosta) if movimientoPosta != DejarseFajar  && movimientoPosta != genkidama => movimientoPosta(luchadores.onFst(_ quedateNormal()))
         case _ => movimiento(luchadores)
       }
     }

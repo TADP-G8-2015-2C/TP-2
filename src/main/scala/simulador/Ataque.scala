@@ -36,7 +36,7 @@ abstract class AtaqueEnergico(unAtaque: Luchadores =>(Int,Int)) extends Movimien
       case (_, Androide)  => (luchadores._1.disminuirKi(ki1), luchadores._2.aumentarKi(ki2))
       case (_, _)         => (luchadores._1.disminuirKi(ki1), luchadores._2.disminuirKi(ki2))
     }
-})
+}) 
 
 case class onda(kiNecesario: Int) extends AtaqueEnergico((luchadores: Luchadores) => {
   val (l1,l2) = luchadores
@@ -52,7 +52,11 @@ case class onda(kiNecesario: Int) extends AtaqueEnergico((luchadores: Luchadores
 
 case object genkidama extends AtaqueEnergico((luchadores: Luchadores) => {
   val (l1,l2) = luchadores
-  (0, math.pow(10, l1.roundsFajado).asInstanceOf[Int])
+  l1.estado match {
+    case NiUnaMenos(cantRounds) => (0, math.pow(10, cantRounds).asInstanceOf[Int]) 
+    case _ =>(0, 1) 
+  }
+  
 })
 
 

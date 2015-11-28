@@ -245,8 +245,8 @@ class MovimientosSpec extends FlatSpec with Matchers {
   //test NiUnaMenos
   "kingCold" should "kingCold se deja fajar y esta 1 round fajado" in {
     val (kingColdAfter, mrSatanAfter) = DejarseFajar(kingCold, mrSatan)
-    assertResult( 1) {
-       kingColdAfter.roundsFajado
+    assertResult( NiUnaMenos(1)) {
+       kingColdAfter.estado
     }
   }
   //test genkidama
