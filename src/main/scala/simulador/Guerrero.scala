@@ -97,7 +97,7 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
   def transformateEnMono = copy(kiMax = kiMax * 3, ki = kiMax, fase = MonoGigante)
 
   def movimientoMasEfectivoContra(enemigo: Guerrero)(criterio: CriterioDeCombate): Option[Movimiento] = {
-    if (movimientos isEmpty) throw new NoTieneMovimientosException("Antes que aprenda algun movimiento")
+    if (movimientos isEmpty) return None
     val luchadores = (this, enemigo)
     val movMasEfectivo = movimientos.maxBy { mov => criterio(mov(luchadores)) }
 
@@ -132,7 +132,8 @@ case class Guerrero(raza: Raza, ki: Int = 0, kiMax: Int, items: List[Item] = Lis
     def pelearDadoMovimiento(resultado: ResultadoDePelea, movimiento: Movimiento): ResultadoDePelea = {
       for {
         (atacante, enemigo) <- resultado
-      } yield (atacante.pelearUnRound(movimiento)(enemigo)) /*
+      } yield (atacante.pelearUnRound(movimiento)(enemigo))
+      /*
       resultado match {
         case SiguenPeleando(luchadores) => ResultadoDePelea(luchadores._1.pelearUnRound(movimiento)(luchadores._2)())
         case Ganador(luchador)          => Ganador(luchador) //Falta arreglar aca
