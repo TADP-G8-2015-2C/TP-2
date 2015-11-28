@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/TADP-G8-2015-2C/TP-2.svg?branch=master)](https://travis-ci.org/TADP-G8-2015-2C/TP-2.svg?branch=master)
+[![codecov.io](https://codecov.io/github/TADP-G8-2015-2C/TP-2/coverage.svg?branch=master)](https://codecov.io/github/TADP-G8-2015-2C/TP-2?branch=master)
 
 #Trabajo Practico 2 TADP-2c-2015
 
